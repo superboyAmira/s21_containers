@@ -1,9 +1,10 @@
-#ifndef S21_CONTAINER_SRC_S21_VECTOR_H_
-#define S21_CONTAINER_SRC_S21_VECTOR_H_
+#ifndef S21_CONTAINER_SRC_VECTOR_H_
+#define S21_CONTAINER_SRC_VECTOR_H_
 
 #include <iostream>
 #include <initializer_list>
 #include <memory>
+#include <iterator>
 #include <limits>
 
 namespace s21 {
@@ -16,9 +17,10 @@ class Vector {
         using const_reference = const T &;
         using pointer = T *;
         using const_pointer = const T *;
-        using iterator = VectorIterator<T, false>;
-        using const_iterator = CommonIterator<T, true>;
+        using iterator = Iterator<T, false>;
+        using const_iterator = Iterator<T, true>;
         using size_type = size_t;
+        // using traits = std::allocator_traits<Allocator>;
 
     private:
         Allocator alloc_;
@@ -28,42 +30,120 @@ class Vector {
 
     public:
         Vector() noexcept : size_(0), capacity_(0), arr_(nullptr) {};
-        Vector(size_t n);
+        Vector(size_t n) {
+            
+        };
         Vector(std::initializer_list<value_type> const &items);
         Vector(const vector &v) {
             std::allocator_traits<Allocator>::select_on_container_copy_construction(alloc_);
         };
         Vector(vector &&v);
-        ~Vector();
+
+        /*
+        Destructs the vector. 
+        The destructors of the elements 
+        are called and the used storage is deallocated.
+        */
+        ~Vector() noexcept {
+            for (auto itr = begin(); itr != end(); ++itr) {
+                std::allocator_traits<Allocator>::destroy(alloc_, itr);
+            }
+            std::allocator_traits<Allocator>::deallocate(alloc_, arr_, capacity_);
+            arr_ = nullptr;
+        };
+
         operator=(vector &&v);
 
-        reference at(size_type pos);
-        reference operator[](size_type pos);
-        const_reference front();
-        const_reference back();
-        T* data();
 
-        iterator begin();
-        iterator end();
+        /*
+        Returns a reference to the element at specified location pos,
+        with bounds checking.
+        If pos is not within the range of the container, 
+        an exception of type std::out_of_range is thrown. 
+        */
+        reference at(size_type pos) {
+            if (pos >= size_) {
+                throw std::out_of_range(__FILE__ + __LINE__);
+            }
+            return *(begin() + pos);
+        };
+
+        /*
+        Returns a reference to the element at specified location pos. 
+        No bounds checking is performed. 
+        */
+        reference operator[](size_type pos) {
+            return arr_[pos];
+        };
+
+        /*
+        Returns a reference to the first element in the container.
+
+        Calling front on an empty container causes undefined behavior.
+        */
+        const_reference front() {
+            return *(begin());
+        };
+
+        /*
+        Returns a reference to the last element in the container.
+
+        Calling back on an empty container causes undefined behavior. 
+        */
+        const_reference back() {
+            return *(begin() + size_ - 1);
+        };
+
+        /*
+        Returns pointer to the underlying array serving as element storage.
+        The pointer is such that range [data(), data() + size()) is always a valid range,
+        even if the container is empty (data() is not dereferenceable in that case). 
+        */
+        T* data() {
+            return array_;
+        };
+
+        /*
+        Returns an iterator to the first element of the vector.
+        If the vector is empty, the returned iterator will be equal to end(). 
+        */
+        iterator begin() noexcept {
+            return iterator(arr_);
+        };
+
+        /*
+        Returns an iterator to the element following the last element of the vector.
+        This element acts as a placeholder; attempting to access it results in undefined behavior. 
+        */
+        iterator end() noexcept {
+            return iterator(arr_ + size_);
+        };
 
         /*
         Checks if the container has no elements, i.e. whether begin() == end(). 
         */
         bool empty() const noexcept {
             bool res = false;
-            if (this->begin() == this->end()) {
+            if (begin() == end()) {
                 res = true;
             }
             return res;
         };
 
-        size_type size();
+        /*
+        Returns the number of elements in the container, i.e. std::distance(begin(), end())
+        */
+        size_type size() const noexcept {
+            return std::distance(begin(), end());
+        };
 
         /*
-        Returns the number of elements in the container, i.e. std::distance(begin(), end()). 
+        Returns the maximum number of elements the container is
+        able to hold due to system or library implementation limitations, 
+        i.e. std::distance(begin(), end()) for the largest container. 
         */
         size_type max_size() const noexcept {
-            return std::distance(this->begin(), this->end());
+            return std::allocator_traits<Allocator>::max_size(Allocator{}) / sizeof(T);
         };
 
         /*
@@ -79,7 +159,7 @@ class Vector {
             if (size <= capacity) {
                 return;
             }
-            if (size > this->max_size()) {
+            if (size > max_size()) {
                 throw std::length_error("size > max_size::reserve::vector\n");
             }
 
@@ -95,8 +175,24 @@ class Vector {
             capacity_ = size;
         }
 
-        size_type capacity();
-        void shrink_to_fit();
+
+        /*
+        Returns the number of elements that the container has currently allocated space for. 
+        */
+        size_type capacity() const noexcept {
+            return capacity_;
+        };
+
+        /*
+        
+        */
+        void shrink_to_fit() {
+            if (capacity_ == size_) {
+                return;
+            }
+            std::allocator_traits<Allocator>::deallocate(alloc_, arr_, size_);
+            capacity_ = size_;
+        };
 
         /*
         Erases all elements from the container. After this call, size() returns zero.
@@ -105,12 +201,17 @@ class Vector {
         Any past-the-end iterators are also invalidated.
         */
         void clear() noexcept {
-            for (auto i = 0; size_) {
-                (arr_ + i)->~T();
+            if constexpr (!std::is_trivially_destructible_v<T>) { // проверки, является ли T тривиально разрушаемым
+                for (auto itr = begin(); itr != end(); ++itr) {
+                    std::allocator_traits<Allocator>::destroy(alloc_, std::addressof(*itr));
+                }
             }
             size_ = 0;
+        }
+
+        iterator insert(iterator pos, const_reference value) {
+            
         };
-        iterator insert(iterator pos, const_reference value);
         void erase(iterator pos);
 
         /*
@@ -138,11 +239,66 @@ class Vector {
             arr_ = new_arr;
             size_++;
         };
-        void pop_back();
+
+        /*
+        Removes the last element of the container.
+        Calling pop_back on an empty container results in undefined behavior.
+        Iterators (including the end() 
+        iterator) and references to the last element are invalidated. 
+        */
+        void pop_back() {
+
+        };
         void swap(vector& other);
 
 };
 
+template <typename T, bool IsConst>
+class Iterator {
+    public:
+        friend class s21::Vector<T>;
+        using value_type = T;
+        using reference = T &;
+        using const_reference = const T &;
+        using pointer = T *;
+        using const_pointer = const T *;
+        using size_type = size_t;
+        using conditional_ptr = std::conditional_t<IsConst, const_pointer, pointer>;
+        using conditional_ref = std::conditional_t<IsConst, const_reference, reference>;
+
+        Iterator() : val(nullptr) {};
+        Iterator(value) : val(value) {};
+        conditional_ref operator+(int n) { return *(value + n); }
+        conditional_ref operator-(int n) { return *(value - n); }
+        conditional_ref operator++(int) { return *(value++); }
+        conditional_ref operator--(int) { return *(value--); }
+        conditional_ref operator++() { return *(value++); }
+        conditional_ref operator--() { return *(value--); }
+        bool operator<=(const CommonIterator &other) const {
+            return (value <= other.value);
+        }
+        bool operator>=(const CommonIterator &other) const {
+            return (value >= other.value);
+        }
+        bool operator<(const CommonIterator &other) const {
+            return (value < other.value);
+        }
+        bool operator>(const CommonIterator &other) const {
+            return (value > other.value);
+        }
+        bool operator!=(const CommonIterator &other) const {
+            return (value != other.value);
+        }
+        bool operator==(const CommonIterator &other) const {
+            return (value == other.value);
+        }
+        conditional_ref operator*() const { return *value; }
+        conditional_ptr operator->() const { return value; }
+
+    private:
+        conditional_ptr val; 
+};
+
 }
 
-#endif  // S21_CONTAINER_SRC_S21_VECTOR_H_
+#endif  // S21_CONTAINER_SRC_VECTOR_H_
