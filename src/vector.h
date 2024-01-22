@@ -7,7 +7,10 @@
 #include <iterator>
 #include <limits>
 
-namespace s21 {
+namespace containers {
+
+template <typename T, bool IsConst>
+class Iterator;
 
 template <typename T, typename Allocator = std::allocator<T>>
 class Vector {
@@ -20,18 +23,18 @@ class Vector {
         using iterator = Iterator<T, false>;
         using const_iterator = Iterator<T, true>;
         using size_type = size_t;
-        // using traits = std::allocator_traits<Allocator>;
+        using traits = std::allocator_traits<Allocator>;
 
     private:
         Allocator alloc_;
         size_type size_;
         size_type capacity_;
-        T* arr_;
+        pointer arr_;
 
     public:
         Vector() noexcept : size_(0), capacity_(0), arr_(nullptr) {};
         Vector(size_t n, const Allocator& alloc = Allocator()) : size_(n), capacity_(n), alloc_(alloc) {
-            arr_ = std::allocator_traits<Allocator>::allocate(alloc_, n);
+            arr_ = traits::allocate(alloc_, n);
         };
         Vector(std::initializer_list<value_type> const &items, const Allocator& alloc = Allocator()) : size_(items.size()), capacity_(items.size()), alloc_(alloc), arr_(std::allocator_traits<Allocator>::allocate(alloc_, items.size())) {
             std::uninitialized_copy(items.begin(), items.end(), arr_);
@@ -44,12 +47,12 @@ class Vector {
             reserve(size_);
             
             for (auto itr_v = v.begin(), itr = begin(); itr_v != v.end(); ++itr_v, ++itr) {
-                std::allocator_traits<Allocator>::construct(alloc_, std::addressof(*itr), *itr_v);
+                traits::construct(alloc_, std::addressof(*itr), *itr_v);
             }
         };
 
 
-        Vector(Vector &&v) noexcept : array_(std::move(v.array_)), size_(v.size_), capacity_(v.capacity_) {
+        Vector(Vector &&v) noexcept : arr_(std::move(v.arr_)), size_(v.size_), capacity_(v.capacity_) {
             v.array_ = nullptr;
             v.size_ = 0;
             v.capacity_ = 0;
@@ -62,16 +65,16 @@ class Vector {
         */
         ~Vector() noexcept {
             for (auto itr = begin(); itr != end(); ++itr) {
-                std::allocator_traits<Allocator>::destroy(alloc_, itr);
+                traits::destroy(alloc_, itr);
             }
-            std::allocator_traits<Allocator>::deallocate(alloc_, arr_, capacity_);
+            traits::deallocate(alloc_, arr_, capacity_);
             arr_ = nullptr;
         };
 
         Vector& operator=(Vector &&v) noexcept {
-            if (std::allocator_traits<Allocator>::propagate_on_container_move_assignment::value == true) {
+            if (traits::propagate_on_container_move_assignment::value == true) {
                 clear();
-                s21::Vector new_vector(std::move(v));
+                Vector new_vector(std::move(v));
                 swap(new_vector);
             } else {
                 // ... https://en.cppreference.com/w/cpp/container/vector/operator%3D
@@ -124,8 +127,8 @@ class Vector {
         The pointer is such that range [data(), data() + size()) is always a valid range,
         even if the container is empty (data() is not dereferenceable in that case). 
         */
-        T* data() {
-            return array_;
+        pointer data() {
+            return arr_;
         };
 
         /*
@@ -168,7 +171,7 @@ class Vector {
         i.e. std::distance(begin(), end()) for the largest container. 
         */
         size_type max_size() const noexcept {
-            return std::allocator_traits<Allocator>::max_size(Allocator{}) / sizeof(T);
+            return traits::max_size(Allocator{}) / sizeof(T);
         };
 
         /*
@@ -187,18 +190,18 @@ class Vector {
             if (size > max_size()) {
                 throw std::length_error("size > max_size/reserve/vector\n");
             }
-            pointer new_data = allocator_traits::allocate(allocator_, size);
+            pointer new_data = traits::allocate(alloc_, size);
 
             try {
-                uninitialized_move(begin(), end(), new_data);
-                destroy(begin(), end());
-                allocator_traits::deallocate(alloc_, arr_, capacity());
+                std::uninitialized_move(begin(), end(), new_data); // 58 min vector video
+                traits::destroy(begin(), end());
+                traits::deallocate(alloc_, arr_, capacity());
                 arr_ = new_data;
                 capacity_ = size;
             }
             catch (...) {
-                destroy(new_data, new_data + size);
-                allocator_traits::deallocate(alloc_, new_data, size);
+                traits::destroy(new_data, new_data + size);
+                traits::deallocate(alloc_, new_data, size);
                 throw;
             }
         }
@@ -218,7 +221,7 @@ class Vector {
             if (capacity_ == size_) {
                 return;
             }
-            std::allocator_traits<Allocator>::deallocate(alloc_, arr_, size_);
+            traits::deallocate(alloc_, arr_, size_);
             capacity_ = size_;
         };
 
@@ -231,16 +234,60 @@ class Vector {
         void clear() noexcept {
             if constexpr (!std::is_trivially_destructible_v<T>) { // проверки, является ли T тривиально разрушаемым
                 for (auto itr = begin(); itr != end(); ++itr) {
-                    std::allocator_traits<Allocator>::destroy(alloc_, std::addressof(*itr));
+                    traits::destroy(alloc_, std::addressof(*itr));
                 }
             }
             size_ = 0;
         }
 
         iterator insert(iterator pos, const_reference value) {
-            pointer new_arr = 
+            size_type new_size = size_ + 1;
+            pointer new_arr = nullptr;
+            size_type new_capacity = capacity_;
+
+            if (new_size > capacity_) {
+                new_capacity = std::max(2 * capacity_, new_size);    
+            }
+            new_arr = traits::allocate(alloc_, new_capacity);
+            try {
+                iterator inserted = std::uninitialized_copy(begin(), pos, new_arr);
+                std::uninitialized_fill(inserted, value);
+                std::uninitialized_copy(pos, end(), new_arr + *pos);
+            } catch (...) {
+                traits::deallocate(alloc_, new_arr);
+                throw;
+            }
+            for (auto it = begin(); it != end(); ++it) {
+                traits::destroy(alloc_, arr_, it);
+            }
+            traits::deallocate(alloc_, arr_, capacity_);
+
+            arr_ = new_arr;
+            capacity_ = new_capacity;
+            size_ = new_size;
         };
-        void erase(iterator pos);
+        void erase(iterator pos) {
+            size_type new_size = size_ - 1;
+            pointer new_arr = nullptr;
+            size_type new_capacity = new_size;
+
+            new_arr = traits::allocate(alloc_, new_capacity);
+            try {
+                std::uninitialized_copy(begin(), pos - 1, new_arr);
+                std::uninitialized_copy(pos, end(), new_arr + *pos);
+            } catch (...) {
+                traits::deallocate(alloc_, new_arr);
+                throw;
+            }
+            for (auto it = begin(); it != end(); ++it) {
+                traits::destroy(alloc_, arr_, it);
+            }
+            traits::deallocate(alloc_, arr_, capacity_);
+
+            arr_ = new_arr;
+            capacity_ = new_capacity;
+            size_ = new_size;
+        };
 
         /*
         Appends the given element value to the end of the container.
@@ -253,16 +300,15 @@ class Vector {
         Otherwise only the end() iterator is invalidated. 
         */
         void push_back(const_reference value) {
-            using traits = std::allocator_traits<Allocator>;
-            
+            pointer new_arr = nullptr;
             if (size_ == capacity_) {
-                T* new_arr = traits::allocate(capacity_ * 2);
-
-                for (size_type i = 0; i < size; ++i) {
-                    traits::construct(alloc_, std::addressof(new_arr + i), std::move_if_noexcept(value));
-                    traits::destroy(alloc, arr_ + i);
-                }
+                new_arr = traits::allocate(capacity_ * 2);
             }
+            for (size_type i = 0; i < size; ++i) {
+                traits::construct(alloc_, std::addressof(new_arr + i), std::move_if_noexcept(value));
+                traits::destroy(alloc_, arr_ + i);
+            }
+            
             traits::deallocate(arr_, size_);
             arr_ = new_arr;
             size_++;
@@ -274,20 +320,20 @@ class Vector {
         Iterators (including the end() 
         iterator) and references to the last element are invalidated. 
         */
-        void pop_back() {
+        // void pop_back() {
 
-        };
-        void swap(VSector& other) {
+        // };
+        // void swap(VSector& other) {
 
 
-        };
+        // };
 
 };
 
 template <typename T, bool IsConst>
 class Iterator {
     public:
-        friend class s21::Vector<T>;
+        friend class Vector<T>;
         using value_type = T;
         using reference = T &;
         using const_reference = const T &;
@@ -297,37 +343,37 @@ class Iterator {
         using conditional_ptr = std::conditional_t<IsConst, const_pointer, pointer>;
         using conditional_ref = std::conditional_t<IsConst, const_reference, reference>;
 
-        Iterator() : val(nullptr) {};
-        Iterator(value) : val(value) {};
+        Iterator() : value(nullptr) {};
+        Iterator(pointer val) : value(val) {};
         conditional_ref operator+(int n) { return *(value + n); }
         conditional_ref operator-(int n) { return *(value - n); }
         conditional_ref operator++(int) { return *(value++); }
         conditional_ref operator--(int) { return *(value--); }
         conditional_ref operator++() { return *(value++); }
         conditional_ref operator--() { return *(value--); }
-        bool operator<=(const CommonIterator &other) const {
+        bool operator<=(const Iterator &other) const {
             return (value <= other.value);
         }
-        bool operator>=(const CommonIterator &other) const {
+        bool operator>=(const Iterator &other) const {
             return (value >= other.value);
         }
-        bool operator<(const CommonIterator &other) const {
+        bool operator<(const Iterator &other) const {
             return (value < other.value);
         }
-        bool operator>(const CommonIterator &other) const {
+        bool operator>(const Iterator &other) const {
             return (value > other.value);
         }
-        bool operator!=(const CommonIterator &other) const {
+        bool operator!=(const Iterator &other) const {
             return (value != other.value);
         }
-        bool operator==(const CommonIterator &other) const {
+        bool operator==(const Iterator &other) const {
             return (value == other.value);
         }
         conditional_ref operator*() const { return *value; }
         conditional_ptr operator->() const { return value; }
 
     private:
-        conditional_ptr val; 
+        conditional_ptr value; 
 };
 
 }
