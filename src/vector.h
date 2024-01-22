@@ -30,14 +30,30 @@ class Vector {
 
     public:
         Vector() noexcept : size_(0), capacity_(0), arr_(nullptr) {};
-        Vector(size_t n) {
+        Vector(size_t n, const Allocator& alloc = Allocator()) : size_(n), capacity_(n), alloc_(alloc) {
+            arr_ = std::allocator_traits<Allocator>::allocate(alloc_, n);
+        };
+        Vector(std::initializer_list<value_type> const &items, const Allocator& alloc = Allocator()) : size_(items.size()), capacity_(items.size()), alloc_(alloc), arr_(std::allocator_traits<Allocator>::allocate(alloc_, items.size())) {
+            std::uninitialized_copy(items.begin(), items.end(), arr_);
+        };
+
+        Vector(const Vector &v) : size_(v.size_), capacity_(v.capacity_), alloc_(std::allocator_traits<Allocator>::select_on_container_copy_construction(v.alloc_)) {
+            // size_ = v.size_;
+            // capacity_ = v.capacity_;
+            // alloc_ = ;std::allocator_traits<Allocator>::select_on_container_copy_construction(alloc_);
+            reserve(size_);
             
+            for (auto itr_v = v.begin(), itr = begin(); itr_v != v.end(); ++itr_v, ++itr) {
+                std::allocator_traits<Allocator>::construct(alloc_, std::addressof(*itr), *itr_v);
+            }
         };
-        Vector(std::initializer_list<value_type> const &items);
-        Vector(const vector &v) {
-            std::allocator_traits<Allocator>::select_on_container_copy_construction(alloc_);
+
+
+        Vector(Vector &&v) noexcept : array_(std::move(v.array_)), size_(v.size_), capacity_(v.capacity_) {
+            v.array_ = nullptr;
+            v.size_ = 0;
+            v.capacity_ = 0;
         };
-        Vector(vector &&v);
 
         /*
         Destructs the vector. 
@@ -52,7 +68,16 @@ class Vector {
             arr_ = nullptr;
         };
 
-        operator=(vector &&v);
+        Vector& operator=(Vector &&v) noexcept {
+            if (std::allocator_traits<Allocator>::propagate_on_container_move_assignment::value == true) {
+                clear();
+                s21::Vector new_vector(std::move(v));
+                swap(new_vector);
+            } else {
+                // ... https://en.cppreference.com/w/cpp/container/vector/operator%3D
+            }
+            return *this;
+        };
 
 
         /*
@@ -160,19 +185,22 @@ class Vector {
                 return;
             }
             if (size > max_size()) {
-                throw std::length_error("size > max_size::reserve::vector\n");
+                throw std::length_error("size > max_size/reserve/vector\n");
             }
+            pointer new_data = allocator_traits::allocate(allocator_, size);
 
-            T* new_arr = reinterpret_cast<T*>(new int8_t[size * sizeof(T)]);
-            size_type iterator = 0;
             try {
-                std::uninitialized_copy(arr_, arr_ + size, new_arr);
-            } catch (...) {
-                delete[] reinterpret_cast<int8_t>(new_arr);
-                throw std::bad_alloc("bad alloc_::reserve::vector");
+                uninitialized_move(begin(), end(), new_data);
+                destroy(begin(), end());
+                allocator_traits::deallocate(alloc_, arr_, capacity());
+                arr_ = new_data;
+                capacity_ = size;
             }
-            arr_ = new_arr;
-            capacity_ = size;
+            catch (...) {
+                destroy(new_data, new_data + size);
+                allocator_traits::deallocate(alloc_, new_data, size);
+                throw;
+            }
         }
 
 
@@ -210,7 +238,7 @@ class Vector {
         }
 
         iterator insert(iterator pos, const_reference value) {
-            
+            pointer new_arr = 
         };
         void erase(iterator pos);
 
@@ -249,7 +277,10 @@ class Vector {
         void pop_back() {
 
         };
-        void swap(vector& other);
+        void swap(VSector& other) {
+
+
+        };
 
 };
 
