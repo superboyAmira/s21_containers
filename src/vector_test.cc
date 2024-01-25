@@ -951,7 +951,7 @@ TEST(TestVectorIterator, IteratorFirst) {
   auto it = V.begin();
   std::vector<int> V2 = {1, 2};
   auto iter = V2.begin();
-  ASSERT_EQ(it + 1, *(iter + 1));
+  ASSERT_EQ(*(it + 1), *(iter + 1));
 }
 
 TEST(TestVectorIterator, IteratorSecond) {
@@ -959,7 +959,7 @@ TEST(TestVectorIterator, IteratorSecond) {
   auto it = V.end();
   std::vector<int> V2 = {1, 2};
   auto iter = V2.end();
-  ASSERT_EQ(it - 2, *(iter - 2));
+  ASSERT_EQ(*(it - 2), *(iter - 2));
 }
 
 TEST(TestVectorIterator, IteratorThird) {
@@ -1260,3 +1260,9 @@ TEST(TestVectorIteratorConst, IteratorConstThirteenth) {
   ASSERT_EQ(it >= it2, iter >= iter2);
 }
 */
+
+int main(int argc, char **argv) {
+  ::testing::InitGoogleTest(&argc, argv);
+
+  return RUN_ALL_TESTS();
+}

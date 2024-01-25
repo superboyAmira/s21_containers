@@ -9,12 +9,15 @@
 
 namespace containers {
 
-template <typename T, bool IsConst>
-class Iterator;
+// template <typename T, bool IsConst>
+// class Iterator;
+template <typename T, bool is_const>
+struct Iterator;
+
 
 template <typename T, typename Allocator = std::allocator<T>>
 class Vector {
-    private:
+    public:
         using value_type = T;
         using reference = T &;
         using const_reference = const T &;
@@ -25,35 +28,40 @@ class Vector {
         using size_type = size_t;
         using traits = std::allocator_traits<Allocator>;
 
-    private:
-        Allocator alloc_;
-        size_type size_;
-        size_type capacity_;
-        pointer arr_;
-
-    public:
-        Vector() noexcept : size_(0), capacity_(0), arr_(nullptr) {};
-        Vector(size_t n, const Allocator& alloc = Allocator()) : size_(n), capacity_(n), alloc_(alloc) {
+        Vector() noexcept : alloc_(Allocator()), size_(0), capacity_(0), arr_(nullptr) {};
+        
+        Vector(size_t n, const Allocator& alloc = Allocator()) : alloc_(alloc), size_(n), capacity_(n) {
             arr_ = traits::allocate(alloc_, n);
+            for (size_type i = 0; i != n; i++) {
+                try{
+                    traits::construct(alloc_, std::addressof(*(arr_ + i)), std::move(value_type()));
+                } catch (...) {
+                    traits::destroy(alloc_, arr_ + i);
+                    traits::deallocate(alloc_, arr_, capacity_);
+                    throw;
+                }
+            }
         };
-        Vector(std::initializer_list<value_type> const &items, const Allocator& alloc = Allocator()) : size_(items.size()), capacity_(items.size()), alloc_(alloc), arr_(std::allocator_traits<Allocator>::allocate(alloc_, items.size())) {
+        
+        Vector(std::initializer_list<value_type> const &items, const Allocator& alloc = Allocator()) : alloc_(alloc), size_(items.size()), capacity_(items.size()), arr_(nullptr) {
+            arr_ = std::allocator_traits<Allocator>::allocate(alloc_, items.size());
             std::uninitialized_copy(items.begin(), items.end(), arr_);
         };
 
-        Vector(const Vector &v) : size_(v.size_), capacity_(v.capacity_), alloc_(std::allocator_traits<Allocator>::select_on_container_copy_construction(v.alloc_)) {
+        Vector(Vector &v) : alloc_(std::allocator_traits<Allocator>::select_on_container_copy_construction(v.alloc_)), size_(v.size_), capacity_(v.capacity_) {
             // size_ = v.size_;
             // capacity_ = v.capacity_;
             // alloc_ = ;std::allocator_traits<Allocator>::select_on_container_copy_construction(alloc_);
-            reserve(size_);
-            
-            for (auto itr_v = v.begin(), itr = begin(); itr_v != v.end(); ++itr_v, ++itr) {
+            arr_ = traits::allocate(alloc_, capacity_);
+  
+            for (auto itr_v = v.cbegin(), itr = begin(); itr_v != v.cend(); ++itr_v, ++itr) {
                 traits::construct(alloc_, std::addressof(*itr), *itr_v);
             }
         };
 
 
-        Vector(Vector &&v) noexcept : arr_(std::move(v.arr_)), size_(v.size_), capacity_(v.capacity_) {
-            v.array_ = nullptr;
+        Vector(Vector &&v) noexcept : alloc_ (std::allocator_traits<Allocator>::select_on_container_copy_construction(v.alloc_)), size_(v.size_), capacity_(v.capacity_), arr_(std::move(v.arr_)) {
+            v.arr_ = nullptr;
             v.size_ = 0;
             v.capacity_ = 0;
         };
@@ -65,20 +73,22 @@ class Vector {
         */
         ~Vector() noexcept {
             for (auto itr = begin(); itr != end(); ++itr) {
-                traits::destroy(alloc_, itr);
+                traits::destroy(alloc_, std::addressof(*itr));
             }
             traits::deallocate(alloc_, arr_, capacity_);
             arr_ = nullptr;
+            size_ = 0;
+            capacity_ = 0;
         };
 
         Vector& operator=(Vector &&v) noexcept {
-            if (traits::propagate_on_container_move_assignment::value == true) {
+            // if (traits::propagate_on_container_move_assignment::value == true) {
                 clear();
                 Vector new_vector(std::move(v));
                 swap(new_vector);
-            } else {
+            // } else {
                 // ... https://en.cppreference.com/w/cpp/container/vector/operator%3D
-            }
+            // }
             return *this;
         };
 
@@ -93,7 +103,7 @@ class Vector {
             if (pos >= size_) {
                 throw std::out_of_range(__FILE__ + __LINE__);
             }
-            return *(begin() + pos);
+            return *(arr_ + pos);
         };
 
         /*
@@ -110,7 +120,7 @@ class Vector {
         Calling front on an empty container causes undefined behavior.
         */
         const_reference front() {
-            return *(begin());
+            return *(arr_);
         };
 
         /*
@@ -119,7 +129,7 @@ class Vector {
         Calling back on an empty container causes undefined behavior. 
         */
         const_reference back() {
-            return *(begin() + size_ - 1);
+            return *(arr_ + size_ - 1);
         };
 
         /*
@@ -127,7 +137,7 @@ class Vector {
         The pointer is such that range [data(), data() + size()) is always a valid range,
         even if the container is empty (data() is not dereferenceable in that case). 
         */
-        pointer data() {
+        pointer data() const noexcept {
             return arr_;
         };
 
@@ -147,12 +157,20 @@ class Vector {
             return iterator(arr_ + size_);
         };
 
+        const_iterator cbegin() const noexcept {
+            return const_iterator(arr_);
+        };
+
+        const_iterator cend() const noexcept {
+            return const_iterator(arr_ + size_);
+        };
+
         /*
         Checks if the container has no elements, i.e. whether begin() == end(). 
         */
         bool empty() const noexcept {
             bool res = false;
-            if (begin() == end()) {
+            if (cbegin() == cend()) {
                 res = true;
             }
             return res;
@@ -162,7 +180,7 @@ class Vector {
         Returns the number of elements in the container, i.e. std::distance(begin(), end())
         */
         size_type size() const noexcept {
-            return std::distance(begin(), end());
+            return size_;
         };
 
         /*
@@ -171,7 +189,7 @@ class Vector {
         i.e. std::distance(begin(), end()) for the largest container. 
         */
         size_type max_size() const noexcept {
-            return traits::max_size(Allocator{}) / sizeof(T);
+            return traits::max_size(alloc_) / sizeof(T);
         };
 
         /*
@@ -184,7 +202,7 @@ class Vector {
         Strong exeption guarantee!
         */
         void reserve(size_type size) {
-            if (size <= capacity) {
+            if (size <= capacity()) {
                 return;
             }
             if (size > max_size()) {
@@ -194,13 +212,14 @@ class Vector {
 
             try {
                 std::uninitialized_move(begin(), end(), new_data); // 58 min vector video
-                traits::destroy(begin(), end());
+                for (auto itr = begin(); itr != end(); ++itr) { traits::destroy(alloc_, std::addressof(*itr)); };
+
                 traits::deallocate(alloc_, arr_, capacity());
                 arr_ = new_data;
                 capacity_ = size;
             }
             catch (...) {
-                traits::destroy(new_data, new_data + size);
+                // traits::destroy(new_data, new_data + size);
                 traits::deallocate(alloc_, new_data, size);
                 throw;
             }
@@ -240,53 +259,70 @@ class Vector {
             size_ = 0;
         }
 
+        /*
+        Inserts value before pos.
+        */
+        /*iterator insert(iterator pos, const_reference value) {
+            if (size_ == capacity_) {
+                reserve(capacity_ == 0 ? 1 : capacity_ * 2);
+            }
+            size_t index = (begin() - pos);
+            std::uninitialized_move(end() - 1, end(), end());
+            for (size_type i = size_; i > index; --i) {
+                arr_[i] = std::move(arr_[i - 1]);
+            }
+            new (&arr_[index]) value_type(value);
+            ++size_;
+            return begin() + index;
+        }*/
+
         iterator insert(iterator pos, const_reference value) {
-            size_type new_size = size_ + 1;
-            pointer new_arr = nullptr;
-            size_type new_capacity = capacity_;
+            if (size_ == capacity_) { 
+                reserve(capacity_ == 0 ? 1 : capacity_ * 2);
+            }
+            std::uninitialized_move(end() - 1, end(), end()); // move last elem to free space
+            for (auto itr = std::prev(std::prev(end())), itr_moved = std::prev(end()); itr != std::prev(pos); --itr, --itr_moved) {
+                itr = itr_moved;
+            } 
 
-            if (new_size > capacity_) {
-                new_capacity = std::max(2 * capacity_, new_size);    
-            }
-            new_arr = traits::allocate(alloc_, new_capacity);
-            try {
-                iterator inserted = std::uninitialized_copy(begin(), pos, new_arr);
-                std::uninitialized_fill(inserted, value);
-                std::uninitialized_copy(pos, end(), new_arr + *pos);
-            } catch (...) {
-                traits::deallocate(alloc_, new_arr);
-                throw;
-            }
-            for (auto it = begin(); it != end(); ++it) {
-                traits::destroy(alloc_, arr_, it);
-            }
-            traits::deallocate(alloc_, arr_, capacity_);
-
-            arr_ = new_arr;
-            capacity_ = new_capacity;
-            size_ = new_size;
+            traits::construct(alloc_, std::addressof(*(begin() + pos)), value_type(value));
+            ++size_;
+            return begin() + pos;
         };
+
+        /*
+         Removes the element at pos.
+        */
         void erase(iterator pos) {
-            size_type new_size = size_ - 1;
-            pointer new_arr = nullptr;
-            size_type new_capacity = new_size;
-
-            new_arr = traits::allocate(alloc_, new_capacity);
-            try {
-                std::uninitialized_copy(begin(), pos - 1, new_arr);
-                std::uninitialized_copy(pos, end(), new_arr + *pos);
-            } catch (...) {
-                traits::deallocate(alloc_, new_arr);
-                throw;
+            if (pos == end()) { // The iterator pos must be valid and dereferenceable.
+                return;
             }
-            for (auto it = begin(); it != end(); ++it) {
-                traits::destroy(alloc_, arr_, it);
-            }
-            traits::deallocate(alloc_, arr_, capacity_);
+            traits::destroy(alloc_, std::addressof(*pos));
+            // std::uninitialized_move(pos, end(), end() + 1);
+            // traits::construct(alloc_, std::addressof(*(begin() + pos)), value_type(value));
+            // ++size_;
+            // return begin() + pos;
+            
+            // size_type new_size = size_ - 1;
+            // pointer new_arr = nullptr;
+            // size_type new_capacity = new_size;
 
-            arr_ = new_arr;
-            capacity_ = new_capacity;
-            size_ = new_size;
+            // new_arr = traits::allocate(alloc_, new_capacity);
+            // try {
+            //     std::uninitialized_copy(begin(), pos - 1, new_arr);
+            //     std::uninitialized_copy(pos, end(), new_arr + *pos);
+            // } catch (...) {
+            //     traits::deallocate(alloc_, new_arr, new_capacity);
+            //     throw;
+            // }
+            // for (auto it = begin(); it != end(); ++it) {
+            //     traits::destroy(alloc_, arr_, it);
+            // }
+            // traits::deallocate(alloc_, arr_, capacity_);
+
+            // arr_ = new_arr;
+            // capacity_ = new_capacity;
+            // size_ = new_size;
         };
 
         /*
@@ -300,18 +336,9 @@ class Vector {
         Otherwise only the end() iterator is invalidated. 
         */
         void push_back(const_reference value) {
-            pointer new_arr = nullptr;
-            if (size_ == capacity_) {
-                new_arr = traits::allocate(capacity_ * 2);
-            }
-            for (size_type i = 0; i < size; ++i) {
-                traits::construct(alloc_, std::addressof(new_arr + i), std::move_if_noexcept(value));
-                traits::destroy(alloc_, arr_ + i);
-            }
-            
-            traits::deallocate(arr_, size_);
-            arr_ = new_arr;
-            size_++;
+            shrink_to_fit();
+            reserve(capacity() + 1);
+            traits::construct(alloc_, std::addressof(*(end() - 1)), value_type(value));
         };
 
         /*
@@ -323,13 +350,35 @@ class Vector {
         // void pop_back() {
 
         // };
-        // void swap(VSector& other) {
 
+        void swap(Vector &other) noexcept {
+            std::swap(alloc_, other.alloc_);
+            std::swap(size_, other.size_);
+            std::swap(capacity_, other.capacity_);
+            std::swap(arr_, other.arr_);
+        };
 
-        // };
+        void resize(size_type n) {
+            if (n == size_) {
+            return;
+            }
+            if (n > capacity_) {
+            reserve(n);
+            size_ = n;
+            }
+            if (n < capacity_) {
+            size_ = n;
+            }
+        };
 
+    private:
+        Allocator alloc_;
+        size_type size_;
+        size_type capacity_;
+        pointer arr_;
 };
 
+/*
 template <typename T, bool IsConst>
 class Iterator {
     public:
@@ -374,8 +423,88 @@ class Iterator {
 
     private:
         conditional_ptr value; 
+};*/
+
+// https://internalpointers.com/post/writing-custom-iterators-modern-cpp
+template <typename T, bool is_const>
+struct Iterator {
+    public:
+        friend class Vector<T>;
+        using iterator_category = std::bidirectional_iterator_tag;
+        using difference_type   = std::ptrdiff_t;
+        using value_type        = T;
+        using pointer           = std::conditional_t<is_const, const T*, T*>;
+        using reference         = std::conditional_t<is_const, const T&, T&>;
+
+        Iterator() : value_(nullptr) {};
+
+        Iterator(pointer val) : value_(val) {};
+        
+        Iterator operator+(const Iterator& other) const {
+            Iterator tmp = *this;
+            while (tmp != other) {
+                ++tmp;
+            }
+            return tmp;
+        }
+
+        Iterator operator-(const Iterator& other) const {
+            Iterator tmp = *this;
+            while (tmp != other) {
+                --tmp;
+            }
+            return tmp;
+        }
+
+        Iterator operator+(int n) const {
+            Iterator tmp = *this;
+            for (int i = 0; i < n; i++) {
+                ++tmp;
+            }
+            return tmp;
+        };
+
+        Iterator operator-(int n) const {
+            Iterator tmp = *this;
+            for (int i = 0; i < n; i++) {
+                --tmp;
+            }
+            return tmp;
+        };
+        Iterator operator++(int) { Iterator tmp = *this; ++(*this); return tmp; };
+
+        Iterator operator--(int) { Iterator tmp = *this; --(*this); return tmp; };
+
+        Iterator& operator++() { value_++; return *this; }; // prefix
+
+        Iterator& operator--() { value_--; return *this; }; // prefix
+
+        friend bool operator<=(const Iterator &a ,const Iterator &b) {
+            return (a.value_ <= b.value_);
+        };
+        friend bool operator>=(const Iterator &a, const Iterator &b) {
+            return (a.value_ >= b.value_);
+        }
+        friend bool operator<(const Iterator &a, const Iterator &b) {
+            return (a.value_ < b.value_);
+        };
+        friend bool operator>(const Iterator &a,const Iterator &b) {
+            return (a.value_ > b.value_);
+        };
+        friend bool operator!=(const Iterator &a, const Iterator &b) {
+            return (a.value_ != b.value_);
+        };
+        friend bool operator==(const Iterator &a, const Iterator &b) {
+            return (a.value_ == b.value_);
+        };
+        
+        reference operator*() const { return *value_; };
+
+        pointer operator->() const { return value_; };
+
+    private:
+        pointer value_; 
 };
 
 }
-
 #endif  // S21_CONTAINER_SRC_VECTOR_H_
