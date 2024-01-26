@@ -375,65 +375,65 @@ TEST(TestVectorPushBack, PushBackFifth) {
   ASSERT_EQ(V2.at(4), V.at(4));
 }
 
-// TEST(TestVectorPopBack, PopBackFirst) {
-//   containers::Vector<int> V = {1, 2, 3, 4, 5, 89};
-//   V.pop_back();
-//   std::vector<int> V2 = {1, 2, 3, 4, 5, 89};
-//   V2.pop_back();
-//   ASSERT_EQ(V2.capacity(), V.capacity());
-//   ASSERT_EQ(V2.size(), V.size());
-//   ASSERT_EQ(V2.at(0), V.at(0));
-//   ASSERT_EQ(V2.at(1), V.at(1));
-//   ASSERT_EQ(V2.at(2), V.at(2));
-//   ASSERT_EQ(V2.at(3), V.at(3));
-//   ASSERT_EQ(V2.at(4), V.at(4));
-// }
+TEST(TestVectorPopBack, PopBackFirst) {
+  containers::Vector<int> V = {1, 2, 3, 4, 5, 89};
+  V.pop_back();
+  std::vector<int> V2 = {1, 2, 3, 4, 5, 89};
+  V2.pop_back();
+  ASSERT_EQ(V2.capacity(), V.capacity());
+  ASSERT_EQ(V2.size(), V.size());
+  ASSERT_EQ(V2.at(0), V.at(0));
+  ASSERT_EQ(V2.at(1), V.at(1));
+  ASSERT_EQ(V2.at(2), V.at(2));
+  ASSERT_EQ(V2.at(3), V.at(3));
+  ASSERT_EQ(V2.at(4), V.at(4));
+}
 
-// TEST(TestVectorPopBack, PopBackSecond) {
-//   containers::Vector<int> V = {1, 2, 3, 4};
-//   V.pop_back();
-//   std::vector<int> V2 = {1, 2, 3, 4};
-//   V2.pop_back();
-//   ASSERT_EQ(V2.capacity(), V.capacity());
-//   ASSERT_EQ(V2.size(), V.size());
-//   ASSERT_EQ(V2.at(0), V.at(0));
-//   ASSERT_EQ(V2.at(1), V.at(1));
-//   ASSERT_EQ(V2.at(2), V.at(2));
-// }
+TEST(TestVectorPopBack, PopBackSecond) {
+  containers::Vector<int> V = {1, 2, 3, 4};
+  V.pop_back();
+  std::vector<int> V2 = {1, 2, 3, 4};
+  V2.pop_back();
+  ASSERT_EQ(V2.capacity(), V.capacity());
+  ASSERT_EQ(V2.size(), V.size());
+  ASSERT_EQ(V2.at(0), V.at(0));
+  ASSERT_EQ(V2.at(1), V.at(1));
+  ASSERT_EQ(V2.at(2), V.at(2));
+}
 
-// TEST(TestVectorPopBack, PopBackThird) {
-//   containers::Vector<int> V = {1, 2, 3, 4, 5};
-//   V.pop_back();
-//   std::vector<int> V2 = {1, 2, 3, 4, 5};
-//   V2.pop_back();
-//   ASSERT_EQ(V2.capacity(), V.capacity());
-//   ASSERT_EQ(V2.size(), V.size());
-//   ASSERT_EQ(V2.at(0), V.at(0));
-//   ASSERT_EQ(V2.at(1), V.at(1));
-//   ASSERT_EQ(V2.at(2), V.at(2));
-//   ASSERT_EQ(V2.at(3), V.at(3));
-// }
+TEST(TestVectorPopBack, PopBackThird) {
+  containers::Vector<int> V = {1, 2, 3, 4, 5};
+  V.pop_back();
+  std::vector<int> V2 = {1, 2, 3, 4, 5};
+  V2.pop_back();
+  ASSERT_EQ(V2.capacity(), V.capacity());
+  ASSERT_EQ(V2.size(), V.size());
+  ASSERT_EQ(V2.at(0), V.at(0));
+  ASSERT_EQ(V2.at(1), V.at(1));
+  ASSERT_EQ(V2.at(2), V.at(2));
+  ASSERT_EQ(V2.at(3), V.at(3));
+}
 
-// TEST(TestVectorPopBack, PopBackFourth) {
-//   containers::Vector<int> V;
-//   V.push_back(6);
-//   V.push_back(5);
-//   V.push_back(4);
-//   V.push_back(3);
-//   std::vector<int> V2;
-//   V2.push_back(6);
-//   V2.push_back(5);
-//   V2.push_back(4);
-//   V2.push_back(3);
+TEST(TestVectorPopBack, PopBackFourth) {
+  containers::Vector<int> V;
+  V.push_back(6);
+  V.push_back(5);
+  V.push_back(4);
+  V.push_back(3);
+  std::vector<int> V2;
+  V2.push_back(6);
+  V2.push_back(5);
+  V2.push_back(4);
+  V2.push_back(3);
 
-//   V.pop_back();
-//   V2.pop_back();
-//   ASSERT_EQ(V2.capacity(), V.capacity());
-//   ASSERT_EQ(V2.size(), V.size());
-//   ASSERT_EQ(V2.at(0), V.at(0));
-//   ASSERT_EQ(V2.at(1), V.at(1));
-//   ASSERT_EQ(V2.at(2), V.at(2));
-// }
+  V.pop_back();
+  V2.pop_back();
+  ASSERT_EQ(V2.capacity(), V.capacity());
+  ASSERT_EQ(V2.size(), V.size());
+  ASSERT_EQ(V2.at(0), V.at(0));
+  ASSERT_EQ(V2.at(1), V.at(1));
+  ASSERT_EQ(V2.at(2), V.at(2));
+}
 
 // TEST(TestVectorPopBack, PopBackFifth) {
 //   containers::Vector<int> V;
@@ -443,46 +443,46 @@ TEST(TestVectorPushBack, PushBackFifth) {
 //   ASSERT_EQ(V2.capacity(), V.capacity());
 // }
 
-// TEST(TestVectorPopBack, PopBackSixth) {
-//   containers::Vector<int> V = {1};
-//   std::vector<int> V2 = {1};
-//   V.pop_back();
-//   V2.pop_back();
-//   ASSERT_EQ(V2.capacity(), V.capacity());
-// }
+TEST(TestVectorPopBack, PopBackSixth) {
+  containers::Vector<int> V = {1};
+  std::vector<int> V2 = {1};
+  V.pop_back();
+  V2.pop_back();
+  ASSERT_EQ(V2.capacity(), V.capacity());
+}
 
-// TEST(TestVectorPopBack, PopBackSeveth) {
-//   containers::Vector<char> V;
-//   V.push_back('a');
-//   V.push_back('b');
-//   V.push_back('c');
-//   V.push_back('d');
-//   std::vector<char> V2;
-//   V2.push_back('a');
-//   V2.push_back('b');
-//   V2.push_back('c');
-//   V2.push_back('d');
-//   V.pop_back();
-//   V2.pop_back();
-//   ASSERT_EQ(V2.capacity(), V.capacity());
-//   ASSERT_EQ(V2.at(1), V.at(1));
-//   ASSERT_EQ(V2.at(2), V.at(2));
-//   ASSERT_EQ(V2.size(), V.size());
-//   ASSERT_EQ(V2.at(0), V.at(0));
-// }
+TEST(TestVectorPopBack, PopBackSeveth) {
+  containers::Vector<char> V;
+  V.push_back('a');
+  V.push_back('b');
+  V.push_back('c');
+  V.push_back('d');
+  std::vector<char> V2;
+  V2.push_back('a');
+  V2.push_back('b');
+  V2.push_back('c');
+  V2.push_back('d');
+  V.pop_back();
+  V2.pop_back();
+  ASSERT_EQ(V2.capacity(), V.capacity());
+  ASSERT_EQ(V2.at(1), V.at(1));
+  ASSERT_EQ(V2.at(2), V.at(2));
+  ASSERT_EQ(V2.size(), V.size());
+  ASSERT_EQ(V2.at(0), V.at(0));
+}
 
-// TEST(TestVectorPopBack, PopBackEighth) {
-//   containers::Vector<char> V = {'a', 'b', 'c', 'd', 'f'};
-//   std::vector<char> V2 = {'a', 'b', 'c', 'd', 'f'};
-//   V.pop_back();
-//   V2.pop_back();
-//   ASSERT_EQ(V2.capacity(), V.capacity());
-//   ASSERT_EQ(V2.size(), V.size());
-//   ASSERT_EQ(V2.at(0), V.at(0));
-//   ASSERT_EQ(V2.at(1), V.at(1));
-//   ASSERT_EQ(V2.at(2), V.at(2));
-//   ASSERT_EQ(V2.at(3), V.at(3));
-// }
+TEST(TestVectorPopBack, PopBackEighth) {
+  containers::Vector<char> V = {'a', 'b', 'c', 'd', 'f'};
+  std::vector<char> V2 = {'a', 'b', 'c', 'd', 'f'};
+  V.pop_back();
+  V2.pop_back();
+  ASSERT_EQ(V2.capacity(), V.capacity());
+  ASSERT_EQ(V2.size(), V.size());
+  ASSERT_EQ(V2.at(0), V.at(0));
+  ASSERT_EQ(V2.at(1), V.at(1));
+  ASSERT_EQ(V2.at(2), V.at(2));
+  ASSERT_EQ(V2.at(3), V.at(3));
+}
 
 TEST(TestVectorClear, ClearFirst) {
   containers::Vector<int> V = {1, 2, 3, 4, 5};
@@ -726,83 +726,83 @@ TEST(TestVectorReserve, ReserveSecond) {
   ASSERT_EQ(V2.size(), V.size());
 }
 
-// TEST(TestVectorSwap, SwapFirst) {
-//   containers::Vector<int> V = {1, 2, 3};
-//   containers::Vector<int> V3 = {3, 2, 1};
-//   V.swap(V3);
-//   std::vector<int> V2 = {1, 2, 3};
-//   std::vector<int> V4 = {3, 2, 1};
-//   V2.swap(V4);
-//   ASSERT_EQ(V2.capacity(), V.capacity());
-//   ASSERT_EQ(V3.size(), V4.size());
-//   ASSERT_EQ(*(V.begin()), *(V2.begin()));
-//   ASSERT_EQ(*(V3.begin()), *(V4.begin()));
-// }
+TEST(TestVectorSwap, SwapFirst) {
+  containers::Vector<int> V = {1, 2, 3};
+  containers::Vector<int> V3 = {3, 2, 1};
+  V.swap(V3);
+  std::vector<int> V2 = {1, 2, 3};
+  std::vector<int> V4 = {3, 2, 1};
+  V2.swap(V4);
+  ASSERT_EQ(V2.capacity(), V.capacity());
+  ASSERT_EQ(V3.size(), V4.size());
+  ASSERT_EQ(*(V.begin()), *(V2.begin()));
+  ASSERT_EQ(*(V3.begin()), *(V4.begin()));
+}
 
-// TEST(TestVectorSwap, SwapSecond) {
-//   containers::Vector<int> V = {1, 2};
-//   containers::Vector<int> V3 = {4, 5, 6};
-//   V.swap(V3);
-//   std::vector<int> V2 = {1, 2};
-//   std::vector<int> V4 = {4, 5, 6};
-//   V2.swap(V4);
-//   ASSERT_EQ(V2.capacity(), V.capacity());
-//   ASSERT_EQ(V3.size(), V4.size());
-//   ASSERT_EQ(*(V.begin()), *(V2.begin()));
-//   ASSERT_EQ(*(V3.begin()), *(V4.begin()));
-// }
+TEST(TestVectorSwap, SwapSecond) {
+  containers::Vector<int> V = {1, 2};
+  containers::Vector<int> V3 = {4, 5, 6};
+  V.swap(V3);
+  std::vector<int> V2 = {1, 2};
+  std::vector<int> V4 = {4, 5, 6};
+  V2.swap(V4);
+  ASSERT_EQ(V2.capacity(), V.capacity());
+  ASSERT_EQ(V3.size(), V4.size());
+  ASSERT_EQ(*(V.begin()), *(V2.begin()));
+  ASSERT_EQ(*(V3.begin()), *(V4.begin()));
+}
 
-// TEST(TestVectorSwap, SwapThird) {
-//   containers::Vector<int> V = {1, 2, 3, 6, 7, 3, 6, 2, 4};
-//   containers::Vector<int> V3 = {3};
-//   V.swap(V3);
-//   std::vector<int> V2 = {1, 2, 3, 6, 7, 3, 6, 2, 4};
-//   std::vector<int> V4 = {3};
-//   V2.swap(V4);
-//   ASSERT_EQ(V2.capacity(), V.capacity());
-//   ASSERT_EQ(V3.size(), V4.size());
-//   ASSERT_EQ(*(V.begin()), *(V2.begin()));
-//   ASSERT_EQ(*(V3.begin()), *(V4.begin()));
-// }
+TEST(TestVectorSwap, SwapThird) {
+  containers::Vector<int> V = {1, 2, 3, 6, 7, 3, 6, 2, 4};
+  containers::Vector<int> V3 = {3};
+  V.swap(V3);
+  std::vector<int> V2 = {1, 2, 3, 6, 7, 3, 6, 2, 4};
+  std::vector<int> V4 = {3};
+  V2.swap(V4);
+  ASSERT_EQ(V2.capacity(), V.capacity());
+  ASSERT_EQ(V3.size(), V4.size());
+  ASSERT_EQ(*(V.begin()), *(V2.begin()));
+  ASSERT_EQ(*(V3.begin()), *(V4.begin()));
+}
 
-// TEST(TestVectorSwap, SwapFourth) {
-//   containers::Vector<int> V = {1};
-//   containers::Vector<int> V3 = {4};
-//   V.swap(V3);
-//   std::vector<int> V2 = {1};
-//   std::vector<int> V4 = {4};
-//   V2.swap(V4);
-//   ASSERT_EQ(V2.capacity(), V.capacity());
-//   ASSERT_EQ(V3.size(), V4.size());
-//   ASSERT_EQ(*(V.begin()), *(V2.begin()));
-//   ASSERT_EQ(*(V3.begin()), *(V4.begin()));
-// }
+TEST(TestVectorSwap, SwapFourth) {
+  containers::Vector<int> V = {1};
+  containers::Vector<int> V3 = {4};
+  V.swap(V3);
+  std::vector<int> V2 = {1};
+  std::vector<int> V4 = {4};
+  V2.swap(V4);
+  ASSERT_EQ(V2.capacity(), V.capacity());
+  ASSERT_EQ(V3.size(), V4.size());
+  ASSERT_EQ(*(V.begin()), *(V2.begin()));
+  ASSERT_EQ(*(V3.begin()), *(V4.begin()));
+}
 
-// TEST(TestVectorSwap, SwapFifth) {
-//   containers::Vector<std::string> V = {"a", "b", "c", "d", "f"};
-//   containers::Vector<std::string> V3 = {"is", "not", "one", "word"};
-//   V.swap(V3);
-//   std::vector<std::string> V2 = {"a", "b", "c", "d", "f"};
-//   std::vector<std::string> V4 = {"is", "not", "one", "word"};
-//   V2.swap(V4);
-//   ASSERT_EQ(V2.capacity(), V.capacity());
-//   ASSERT_EQ(V3.size(), V4.size());
-//   ASSERT_EQ(*(V.begin()), *(V2.begin()));
-//   ASSERT_EQ(*(V3.begin()), *(V4.begin()));
-// }
+TEST(TestVectorSwap, SwapFifth) {
+  containers::Vector<std::string> V = {"a", "b", "c", "d", "f"};
+  containers::Vector<std::string> V3 = {"is", "not", "one", "word"};
+  V.swap(V3);
+  std::vector<std::string> V2 = {"a", "b", "c", "d", "f"};
+  std::vector<std::string> V4 = {"is", "not", "one", "word"};
+  V2.swap(V4);
+  ASSERT_EQ(V2.capacity(), V.capacity());
+  ASSERT_EQ(V3.size(), V4.size());
+  ASSERT_EQ(*(V.begin()), *(V2.begin()));
+  ASSERT_EQ(*(V3.begin()), *(V4.begin()));
+}
 
-// TEST(TestVectorSwap, SwapSixth) {
-//   containers::Vector<std::string> V3 = {"a", "b", "c", "d", "f"};
-//   containers::Vector<std::string> V = {"is", "not", "one", "word"};
-//   V.swap(V3);
-//   std::vector<std::string> V4 = {"a", "b", "c", "d", "f"};
-//   std::vector<std::string> V2 = {"is", "not", "one", "word"};
-//   V2.swap(V4);
-//   ASSERT_EQ(V2.capacity(), V.capacity());
-//   ASSERT_EQ(V3.size(), V4.size());
-//   ASSERT_EQ(*(V.begin()), *(V2.begin()));
-//   ASSERT_EQ(*(V3.begin()), *(V4.begin()));
-// }
+TEST(TestVectorSwap, SwapSixth) {
+  containers::Vector<std::string> V3 = {"a", "b", "c", "d", "f"};
+  containers::Vector<std::string> V = {"is", "not", "one", "word"};
+  V.swap(V3);
+  std::vector<std::string> V4 = {"a", "b", "c", "d", "f"};
+  std::vector<std::string> V2 = {"is", "not", "one", "word"};
+  V2.swap(V4);
+  ASSERT_EQ(V2.capacity(), V.capacity());
+  ASSERT_EQ(V3.size(), V4.size());
+  ASSERT_EQ(*(V.begin()), *(V2.begin()));
+  ASSERT_EQ(*(V3.begin()), *(V4.begin()));
+}
 
 TEST(TestVectorOperator, OperatorFirst) {
   containers::Vector<int> V = {4, 6, 8, 10};
@@ -847,63 +847,63 @@ TEST(TestVectorOperator, OperatorThird) {
   ASSERT_EQ(V[3], V2[3]);
 }
 
-// TEST(TestVectorOperator, OperatorFourth) {
-//   containers::Vector<int> V = {4, 6, 8, 10};
-//   containers::Vector<int> V3 = {2, 5};
-//   V = V3;
-//   std::vector<int> V2 = {4, 6, 8, 10};
-//   std::vector<int> V4 = {2, 5};
-//   V2 = V4;
-//   ASSERT_EQ(V2.capacity(), V.capacity());
-//   ASSERT_EQ(V2.size(), V.size());
-//   ASSERT_EQ(*(V.begin()), *(V2.begin()));
-//   ASSERT_EQ(V[1], V2[1]);
-// }
+TEST(TestVectorOperator, OperatorFourth) {
+  containers::Vector<int> V = {4, 6, 8, 10};
+  containers::Vector<int> V3 = {2, 5};
+  V = V3;
+  std::vector<int> V2 = {4, 6, 8, 10};
+  std::vector<int> V4 = {2, 5};
+  V2 = V4;
+  ASSERT_EQ(V2.capacity(), V.capacity());
+  ASSERT_EQ(V2.size(), V.size());
+  ASSERT_EQ(*(V.begin()), *(V2.begin()));
+  ASSERT_EQ(V[1], V2[1]);
+}
 
-// TEST(TestVectorOperator, OperatorFifth) {
-//   containers::Vector<int> V = {2, 5};
-//   containers::Vector<int> V3 = {4, 6, 8, 10};
-//   V = V3;
-//   std::vector<int> V2 = {2, 5};
-//   std::vector<int> V4 = {4, 6, 8, 10};
-//   V2 = V4;
-//   ASSERT_EQ(V2.capacity(), V.capacity());
-//   ASSERT_EQ(V2.size(), V.size());
-//   ASSERT_EQ(*(V.begin()), *(V2.begin()));
-//   ASSERT_EQ(V[1], V2[1]);
-//   ASSERT_EQ(V[2], V2[2]);
-//   ASSERT_EQ(V[3], V2[3]);
-// }
+TEST(TestVectorOperator, OperatorFifth) {
+  containers::Vector<int> V = {2, 5};
+  containers::Vector<int> V3 = {4, 6, 8, 10};
+  V = V3;
+  std::vector<int> V2 = {2, 5};
+  std::vector<int> V4 = {4, 6, 8, 10};
+  V2 = V4;
+  ASSERT_EQ(V2.capacity(), V.capacity());
+  ASSERT_EQ(V2.size(), V.size());
+  ASSERT_EQ(*(V.begin()), *(V2.begin()));
+  ASSERT_EQ(V[1], V2[1]);
+  ASSERT_EQ(V[2], V2[2]);
+  ASSERT_EQ(V[3], V2[3]);
+}
 
-// TEST(TestVectorOperator, OperatorSixth) {
-//   containers::Vector<int> V = {1, 2, 3, 6, 7, 3, 6, 2};
-//   containers::Vector<int> V3 = {1, 2, 3, 6, 7, 3, 6, 2, 4};
-//   V = V3;
-//   std::vector<int> V2 = {1, 2, 3, 6, 7, 3, 6, 2};
-//   std::vector<int> V4 = {1, 2, 3, 6, 7, 3, 6, 2, 4};
-//   V2 = V4;
-//   ASSERT_EQ(V2.capacity(), V.capacity());
-//   ASSERT_EQ(V2.size(), V.size());
-//   ASSERT_EQ(*(V.begin()), *(V2.begin()));
-//   ASSERT_EQ(V[1], V2[1]);
-//   ASSERT_EQ(V[2], V2[2]);
-//   ASSERT_EQ(V[3], V2[3]);
-// }
+TEST(TestVectorOperator, OperatorSixth) {
+  containers::Vector<int> V = {1, 2, 3, 6, 7, 3, 6, 2};
+  containers::Vector<int> V3 = {1, 2, 3, 6, 7, 3, 6, 2, 4};
+  V = V3;
+  std::vector<int> V2 = {1, 2, 3, 6, 7, 3, 6, 2};
+  std::vector<int> V4 = {1, 2, 3, 6, 7, 3, 6, 2, 4};
+  V2 = V4;
+  ASSERT_EQ(V2.capacity(), V.capacity());
+  ASSERT_EQ(V2.size(), V.size());
+  ASSERT_EQ(*(V.begin()), *(V2.begin()));
+  ASSERT_EQ(V[1], V2[1]);
+  ASSERT_EQ(V[2], V2[2]);
+  ASSERT_EQ(V[3], V2[3]);
+}
 
-// TEST(TestVectorOperator, OperatorSeventh) {
-//   containers::Vector<std::string> V = {"a", "b", "c", "d", "f"};
-//   containers::Vector<std::string> V3 = {"it", "is", "not", "one", "word"};
-//   V = V3;
-//   std::vector<std::string> V2 = {"a", "b", "c", "d", "f"};
-//   std::vector<std::string> V4 = {"it", "is", "not", "one", "word"};
-//   V2 = V4;
-//   ASSERT_EQ(V2.capacity(), V.capacity());
-//   ASSERT_EQ(V2.size(), V.size());
-//   ASSERT_EQ(*(V.begin()), *(V2.begin()));
-//   ASSERT_EQ(V[1], V2[1]);
-//   ASSERT_EQ(V[2], V2[2]);
-//   ASSERT_EQ(V[3], V2[3]);
-// }
+TEST(TestVectorOperator, OperatorSeventh) {
+  containers::Vector<std::string> V = {"a", "b", "c", "d", "f"};
+  containers::Vector<std::string> V3 = {"it", "is", "not", "one", "word"};
+  V = V3;
+  std::vector<std::string> V2 = {"a", "b", "c", "d", "f"};
+  std::vector<std::string> V4 = {"it", "is", "not", "one", "word"};
+  V2 = V4;
+  ASSERT_EQ(V2.capacity(), V.capacity());
+  ASSERT_EQ(V2.size(), V.size());
+  ASSERT_EQ(*(V.begin()), *(V2.begin()));
+  ASSERT_EQ(V[1], V2[1]);
+  ASSERT_EQ(V[2], V2[2]);
+  ASSERT_EQ(V[3], V2[3]);
+}
 
 // TEST(TestVectorOperator, OperatorEighth) {
 //   containers::Vector<std::string> V = {"it", "is", "not", "one", "word"};
