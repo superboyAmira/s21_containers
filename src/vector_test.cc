@@ -905,20 +905,20 @@ TEST(TestVectorOperator, OperatorSeventh) {
   ASSERT_EQ(V[3], V2[3]);
 }
 
-// TEST(TestVectorOperator, OperatorEighth) {
-//   containers::Vector<std::string> V = {"it", "is", "not", "one", "word"};
-//   containers::Vector<std::string> V3 = {"a", "b", "c", "d", "f"};
-//   V = V3;
-//   std::vector<std::string> V4 = {"a", "b", "c", "d", "f"};
-//   std::vector<std::string> V2 = {"it", "is", "not", "one", "word"};
-//   V2 = V4;
-//   ASSERT_EQ(V2.capacity(), V.capacity());
-//   ASSERT_EQ(V2.size(), V.size());
-//   ASSERT_EQ(*(V.begin()), *(V2.begin()));
-//   ASSERT_EQ(V[1], V2[1]);
-//   ASSERT_EQ(V[2], V2[2]);
-//   ASSERT_EQ(V[3], V2[3]);
-// }
+TEST(TestVectorOperator, OperatorEighth) {
+  containers::Vector<std::string> V = {"it", "is", "not", "one", "word"};
+  containers::Vector<std::string> V3 = {"a", "b", "c", "d", "f"};
+  V = V3;
+  std::vector<std::string> V4 = {"a", "b", "c", "d", "f"};
+  std::vector<std::string> V2 = {"it", "is", "not", "one", "word"};
+  V2 = V4;
+  ASSERT_EQ(V2.capacity(), V.capacity());
+  ASSERT_EQ(V2.size(), V.size());
+  ASSERT_EQ(*(V.begin()), *(V2.begin()));
+  ASSERT_EQ(V[1], V2[1]);
+  ASSERT_EQ(V[2], V2[2]);
+  ASSERT_EQ(V[3], V2[3]);
+}
 
 TEST(TestVectorAt, At) {
   containers::Vector<int> V = {1, 2};
@@ -932,11 +932,6 @@ TEST(TestVectorAt, AtSecond) {
   std::vector<int> V2 = {1, 2};
   ASSERT_EQ(V.at(1), V2.at(1));
   ASSERT_EQ(V.at(0), V2.at(0));
-}
-
-TEST(TestVectorBrackets, Brackets) {
-  containers::Vector<int> V = {1, 2};
-  EXPECT_ANY_THROW(V[4]);
 }
 
 TEST(TestVectorBrackets, BracketsSecond) {

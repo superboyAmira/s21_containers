@@ -1,3 +1,8 @@
+/*
+\author superboy
+\date 26.01.2024
+*/
+
 #ifndef S21_CONTAINER_SRC_VECTOR_H_
 #define S21_CONTAINER_SRC_VECTOR_H_
 
@@ -9,11 +14,8 @@
 
 namespace containers {
 
-// template <typename T, bool IsConst>
-// class Iterator;
 template <typename T, bool is_const>
 struct Iterator;
-
 
 template <typename T, typename Allocator = std::allocator<T>>
 class Vector {
@@ -28,9 +30,15 @@ class Vector {
         using size_type = size_t;
         using traits = std::allocator_traits<Allocator>;
 
+        /*
+        \brief Default constructor. Constructs an empty container with a default-constructed allocator.
+        */
         Vector() noexcept : alloc_(Allocator()), size_(0), capacity_(0), arr_(nullptr) {};
         
-        Vector(size_t n, const Allocator& alloc = Allocator()) : alloc_(alloc), size_(n), capacity_(n) {
+        /*
+        \brief Constructs the container with count default-inserted instances of T. No copies are made.
+        */
+        explicit Vector(size_t n, const Allocator& alloc = Allocator()) : alloc_(alloc), size_(n), capacity_(n) {
             arr_ = traits::allocate(alloc_, n);
             for (size_type i = 0; i != n; i++) {
                 try{
@@ -43,12 +51,18 @@ class Vector {
             }
         };
         
+        /*
+        \brief Constructs the container with the contents of the initializer list items.
+        */
         Vector(std::initializer_list<value_type> const &items, const Allocator& alloc = Allocator()) : alloc_(alloc), size_(items.size()), capacity_(items.size()), arr_(nullptr) {
             arr_ = std::allocator_traits<Allocator>::allocate(alloc_, items.size());
             std::uninitialized_copy(items.begin(), items.end(), arr_);
         };
 
-        Vector(Vector &v) : alloc_(std::allocator_traits<Allocator>::select_on_container_copy_construction(v.alloc_)), size_(v.size_), capacity_(v.capacity_) {
+        /*
+        \brief Copy constructor. Constructs the container with the copy of the contents of other.
+        */
+        Vector(const Vector &v) : alloc_(std::allocator_traits<Allocator>::select_on_container_copy_construction(v.alloc_)), size_(v.size_), capacity_(v.capacity_) {
             arr_ = traits::allocate(alloc_, capacity_);
   
             for (auto itr_v = v.cbegin(), itr = begin(); itr_v != v.cend(); ++itr_v, ++itr) {
@@ -56,7 +70,9 @@ class Vector {
             }
         };
 
-
+        /*
+        \brief Move constructor. Constructs the container with the contents of other using move semantics. Allocator is obtained by move-construction from the allocator belonging to other. After the move, other is guaranteed to be empty().
+        */
         Vector(Vector &&v) noexcept : alloc_ (std::allocator_traits<Allocator>::select_on_container_copy_construction(v.alloc_)), size_(v.size_), capacity_(v.capacity_), arr_(std::move(v.arr_)) {
             v.arr_ = nullptr;
             v.size_ = 0;
@@ -64,8 +80,8 @@ class Vector {
         };
 
         /*
-        Destructs the vector. 
-        The destructors of the elements 
+        \brief Destructs the vector. 
+        \details The destructors of the elements 
         are called and the used storage is deallocated.
         */
         ~Vector() noexcept {
@@ -78,6 +94,10 @@ class Vector {
             capacity_ = 0;
         };
 
+        /*
+        \brief Copy assignment operator. Replaces the contents with a copy of the contents of other. 
+        \param[in] v another container to use as data source
+        */
         Vector& operator=(const Vector &v) {
             if (this == &v) {
                 return *this;
@@ -101,23 +121,23 @@ class Vector {
             return *this;
         };
 
-
+        /*
+        \brief Move assignment operator. Replaces the contents with those of other using move semantics.
+        \param[in] v another container to use as data source
+        \details https://en.cppreference.com/w/cpp/container/vector/operator%3D
+        */
         Vector& operator=(Vector &&v) noexcept {
-            // if (traits::propagate_on_container_move_assignment::value == true) {
-                clear();
-                Vector new_vector(std::move(v));
-                swap(new_vector);
-            // } else {
-                // ... https://en.cppreference.com/w/cpp/container/vector/operator%3D
-            // }
+            clear();
+            Vector new_vector(std::move(v));
+            swap(new_vector);
             return *this;
         };
 
 
         /*
-        Returns a reference to the element at specified location pos,
+        \brief Returns a reference to the element at specified location pos,
         with bounds checking.
-        If pos is not within the range of the container, 
+        \exception If pos is not within the range of the container, 
         an exception of type std::out_of_range is thrown. 
         */
         reference at(size_type pos) {
@@ -128,66 +148,70 @@ class Vector {
         };
 
         /*
-        Returns a reference to the element at specified location pos. 
-        No bounds checking is performed. 
+        \brief Returns a reference to the element at specified location pos. 
+        \warning No bounds checking is performed. 
         */
         reference operator[](size_type pos) {
             return arr_[pos];
         };
 
         /*
-        Returns a reference to the first element in the container.
-
-        Calling front on an empty container causes undefined behavior.
+        \brief Returns a reference to the first element in the container.
+        \warning Calling back on an empty container causes undefined behavior.
         */
         const_reference front() {
             return *(arr_);
         };
 
         /*
-        Returns a reference to the last element in the container.
-
-        Calling back on an empty container causes undefined behavior. 
+        \brief Returns a reference to the last element in the container.
+        \warning Calling back on an empty container causes undefined behavior. 
         */
         const_reference back() {
             return *(arr_ + size_ - 1);
         };
 
         /*
-        Returns pointer to the underlying array serving as element storage.
-        The pointer is such that range [data(), data() + size()) is always a valid range,
-        even if the container is empty (data() is not dereferenceable in that case). 
+        \brief Returns pointer to the underlying array serving as element storage.
         */
         pointer data() const noexcept {
             return arr_;
         };
 
         /*
-        Returns an iterator to the first element of the vector.
-        If the vector is empty, the returned iterator will be equal to end(). 
+        \brief Returns an iterator to the first element of the vector.
+        \details If the vector is empty, the returned iterator will be equal to end(). 
         */
         iterator begin() noexcept {
             return iterator(arr_);
         };
 
         /*
-        Returns an iterator to the element following the last element of the vector.
-        This element acts as a placeholder; attempting to access it results in undefined behavior. 
+        \brief Returns an iterator to the element following the last element of the vector.
+        \details This element acts as a placeholder; attempting to access it results in undefined behavior. 
         */
         iterator end() noexcept {
             return iterator(arr_ + size_);
         };
 
+        /*
+        \brief Returns an const iterator to the first element of the vector.
+        \details If the vector is empty, the returned iterator will be equal to end(). 
+        */
         const_iterator cbegin() const noexcept {
             return const_iterator(arr_);
         };
 
+        /*
+        \brief Returns an const iterator to the element following the last element of the vector.
+        \details This element acts as a placeholder; attempting to access it results in undefined behavior. 
+        */
         const_iterator cend() const noexcept {
             return const_iterator(arr_ + size_);
         };
 
         /*
-        Checks if the container has no elements, i.e. whether begin() == end(). 
+        \brief Checks if the container has no elements,. 
         */
         bool empty() const noexcept {
             bool res = false;
@@ -198,38 +222,36 @@ class Vector {
         };
 
         /*
-        Returns the number of elements in the container, i.e. std::distance(begin(), end())
+        \brief Returns the number of elements in the container.
         */
         size_type size() const noexcept {
             return size_;
         };
 
         /*
-        Returns the maximum number of elements the container is
-        able to hold due to system or library implementation limitations, 
-        i.e. std::distance(begin(), end()) for the largest container. 
+        \brief Returns the maximum number of elements the container is able to hold due to system or library implementation limitations.
         */
         size_type max_size() const noexcept {
-            return traits::max_size(alloc_) / sizeof(T);
+            return traits::max_size(alloc_);
         };
 
         /*
-        Increase the capacity of the vector 
-        (the total number of elements that the vector can hold without 
+        \brief Increase the capacity of the vector 
+        \param[in] new_cap  	new capacity of the vector, in number of elements
+        \details (the total number of elements that the vector can hold without 
         requiring reallocation) to a value that's greater or equal to new_cap. 
         If new_cap is greater than the current capacity(), 
         new storage is allocated, otherwise the function does nothing.
-
         Strong exeption guarantee!
         */
-        void reserve(size_type size) {
-            if (size <= capacity()) {
+        void reserve(size_type new_cap) {
+            if (new_cap <= capacity()) {
                 return;
             }
-            if (size > max_size()) {
+            if (new_cap > max_size()) {
                 throw std::length_error("size > max_size/reserve/vector\n");
             }
-            pointer new_data = traits::allocate(alloc_, size);
+            pointer new_data = traits::allocate(alloc_, new_cap);
 
             try {
                 std::uninitialized_move(begin(), end(), new_data); // 58 min vector video
@@ -237,24 +259,24 @@ class Vector {
 
                 traits::deallocate(alloc_, arr_, capacity());
                 arr_ = new_data;
-                capacity_ = size;
+                capacity_ = new_cap;
             }
             catch (...) {
-                traits::deallocate(alloc_, new_data, size);
+                traits::deallocate(alloc_, new_data, new_cap);
                 throw;
             }
         }
 
 
         /*
-        Returns the number of elements that the container has currently allocated space for. 
+        \brief Returns the number of elements that the container has currently allocated space for. 
         */
         size_type capacity() const noexcept {
             return capacity_;
         };
 
         /*
-        
+        \brief Requests the removal of unused capacity. 
         */
         void shrink_to_fit() {
             if (capacity_ == size_) {
@@ -265,7 +287,8 @@ class Vector {
         };
 
         /*
-        Erases all elements from the container. After this call, size() returns zero.
+        \brief Erases all elements from the container.
+        \details After this call, size() returns zero.
         Invalidates any references, pointers, or iterators
         referring to contained elements.
         Any past-the-end iterators are also invalidated.
@@ -280,10 +303,13 @@ class Vector {
         }
 
         /*
-        Inserts value before pos.
+        \brief Insert element before pos.
+        \param[in] pos iterator to the element to insert
+        \param[in] value value to the element to insert
+        \return Iterator pointing to the inserted value
         */
         iterator insert(iterator pos, const_reference value) {
-            size_t index = std::distance(begin(), pos);
+            size_type index = std::distance(begin(), pos);
             if (pos == end()) {
                 push_back(value);
                 return begin() + index;
@@ -293,54 +319,42 @@ class Vector {
             }
             std::uninitialized_move(end() - 1, end(), end());
             for (size_type i = size_; i > index; --i) {
-                arr_[i] = std::move(arr_[i - 1]);
+                arr_[i] = std::move_if_noexcept(arr_[i - 1]);
             }
-            // new (&arr_[index]) value_type(value);
             traits::construct(alloc_, std::addressof(arr_[index]), value_type(value));
             ++size_;
             return begin() + index;
         }
 
         /*
-         Removes the element at pos.
+        \brief Removes the element at pos.
+        \param[in] pos iterator to the element to remove
+        \return Iterator following the last removed element.
+        If pos refers to the last element, then the end() iterator is returned.
         */
-        void erase(iterator pos) {
+        iterator erase(iterator pos) {
             if (pos == end()) { // The iterator pos must be valid and dereferenceable.
-                return;
+                return end();
             }
+            if (pos == std::prev(end())) {
+                pop_back();
+                return end();
+            }
+            size_type index = std::distance(begin(), pos);
             traits::destroy(alloc_, std::addressof(*pos));
-            // std::uninitialized_move(pos, end(), end() + 1);
-            // traits::construct(alloc_, std::addressof(*(begin() + pos)), value_type(value));
-            // ++size_;
-            // return begin() + pos;
-            
-            // size_type new_size = size_ - 1;
-            // pointer new_arr = nullptr;
-            // size_type new_capacity = new_size;
-
-            // new_arr = traits::allocate(alloc_, new_capacity);
-            // try {
-            //     std::uninitialized_copy(begin(), pos - 1, new_arr);
-            //     std::uninitialized_copy(pos, end(), new_arr + *pos);
-            // } catch (...) {
-            //     traits::deallocate(alloc_, new_arr, new_capacity);
-            //     throw;
-            // }
-            // for (auto it = begin(); it != end(); ++it) {
-            //     traits::destroy(alloc_, arr_, it);
-            // }
-            // traits::deallocate(alloc_, arr_, capacity_);
-
-            // arr_ = new_arr;
-            // capacity_ = new_capacity;
-            // size_ = new_size;
+            for (; index < size_ - 1; ++index) {
+                arr_[index] = std::move_if_noexcept(arr_[index + 1]);
+            }
+            size_--;
+            return begin() + index;
         };
 
         /*
-        Appends the given element value to the end of the container.
+        \brief Appends the given element value to the end of the container.
+        \param[in] value the value of the element to append
+        \details
         1) The new element is initialized as a copy of value.
         2) value is moved into the new element.
-
         If after the operation the new size() is greater than old capacity()
         a reallocation takes place, in which case all iterators (including 
         the end() iterator) and all references to the elements are invalidated. 
@@ -358,8 +372,8 @@ class Vector {
         };
 
         /*
-        Removes the last element of the container.
-        Calling pop_back on an empty container results in undefined behavior.
+        \brief Removes the last element of the container.
+        \details Calling pop_back on an empty container results in undefined behavior.
         Iterators (including the end() 
         iterator) and references to the last element are invalidated. 
         */
@@ -368,6 +382,10 @@ class Vector {
             size_--;
         };
 
+        /*
+        \brief Exchanges the contents and capacity of the container with those of other.
+        \param[in] other container to exchange the contents with
+        */
         void swap(Vector &other) noexcept {
             std::swap(alloc_, other.alloc_);
             std::swap(size_, other.size_);
@@ -375,23 +393,22 @@ class Vector {
             std::swap(arr_, other.arr_);
         };
 
+        /*
+        \brief Resizes the container to contain count elements, does nothing if count == size().
+        \param[in] n new size of the container 
+        */
         void resize(size_type n) {
             if (n == size_) {
-            return;
+                return;
             }
             if (n > capacity_) {
-            reserve(n);
-            size_ = n;
+                reserve(n);
+                size_ = n;
             }
             if (n < capacity_) {
-            size_ = n;
+                size_ = n;
             }
         };
-
-        // void print() {
-        //     T t[capacity_];
-        //     for (auto itr = 0, i = 0; itr != capacity_; ++itr, i++) {t[i] = arr_[itr];};
-        // }
 
     private:
         Allocator alloc_;
@@ -400,7 +417,13 @@ class Vector {
         pointer arr_;
 };
 
-// https://internalpointers.com/post/writing-custom-iterators-modern-cpp
+/*
+\brief Implementation self-made iterator, based on std::bidirectional_iterator type
+\param[in] T value template
+\param[in] is_const const bool flag
+\details https://internalpointers.com/post/writing-custom-iterators-modern-cpp
+*/
+
 template <typename T, bool is_const>
 struct Iterator {
     public:
