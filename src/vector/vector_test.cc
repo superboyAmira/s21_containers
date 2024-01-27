@@ -3,10 +3,10 @@
 #include <string>
 #include <vector>
 
-#include "containers.h"
+#include "../s21_containers.h"
 
 TEST(TestVectorConstructor, ConstructorFirst) {
-  containers::Vector<int> V = {1, 2, 3, 4, 5};
+  s21::Vector<int> V = {1, 2, 3, 4, 5};
   std::vector<int> V2 = {1, 2, 3, 4, 5};
   ASSERT_EQ(V2.at(0), V.at(0));
   ASSERT_EQ(V2.at(1), V.at(1));
@@ -16,15 +16,15 @@ TEST(TestVectorConstructor, ConstructorFirst) {
 }
 
 TEST(TestVectorConstructor, ConstructorSecond) {
-  containers::Vector<int> V;
+  s21::Vector<int> V;
   std::vector<int> V2;
   ASSERT_EQ(V2.size(), V.size());
   ASSERT_EQ(V2.capacity(), V.capacity());
 }
 
 TEST(TestVectorConstructor, ConstructorThird) {
-  containers::Vector<int> V = {1, 2, 3, 4, 5};
-  containers::Vector<int> V3(V);
+  s21::Vector<int> V = {1, 2, 3, 4, 5};
+  s21::Vector<int> V3(V);
   std::vector<int> V2 = {1, 2, 3, 4, 5};
   std::vector<int> V4(V2);
   ASSERT_EQ(V3.size(), V4.size());
@@ -37,8 +37,8 @@ TEST(TestVectorConstructor, ConstructorThird) {
 }
 
 TEST(TestVectorConstructor, ConstructorFourth) {
-  containers::Vector<int> V = {1, 2, 3, 4, 5};
-  containers::Vector<int> V3(std::move(V));
+  s21::Vector<int> V = {1, 2, 3, 4, 5};
+  s21::Vector<int> V3(std::move(V));
   std::vector<int> V2 = {1, 2, 3, 4, 5};
   std::vector<int> V4(std::move(V2));
   ASSERT_EQ(V3.size(), V4.size());
@@ -51,15 +51,15 @@ TEST(TestVectorConstructor, ConstructorFourth) {
 }
 
 TEST(TestVectorConstructor, ConstructorSixth) {
-  containers::Vector<int> V(5);
+  s21::Vector<int> V(5);
   std::vector<int> V2(5);
   ASSERT_EQ(V.size(), V2.size());
   ASSERT_EQ(V.capacity(), V2.capacity());
 }
 
 TEST(TestVectorConstructor, ConstructorSeventh) {
-  containers::Vector<std::string> V = {"a", "b", "c", "d", "f"};
-  containers::Vector<std::string> V3(std::move(V));
+  s21::Vector<std::string> V = {"a", "b", "c", "d", "f"};
+  s21::Vector<std::string> V3(std::move(V));
   std::vector<std::string> V2 = {"a", "b", "c", "d", "f"};
   ;
   std::vector<std::string> V4(std::move(V2));
@@ -73,8 +73,8 @@ TEST(TestVectorConstructor, ConstructorSeventh) {
 }
 
 TEST(TestVectorConstructor, ConstructorEighth) {
-  containers::Vector<std::string> V = {"a", "b", "c", "d", "f"};
-  containers::Vector<std::string> V3(V);
+  s21::Vector<std::string> V = {"a", "b", "c", "d", "f"};
+  s21::Vector<std::string> V3(V);
   std::vector<std::string> V2 = {"a", "b", "c", "d", "f"};
   ;
   std::vector<std::string> V4(V2);
@@ -88,8 +88,8 @@ TEST(TestVectorConstructor, ConstructorEighth) {
 }
 
 TEST(TestVectorConstructor, ConstructorNinth) {
-  containers::Vector<std::string> V = {"a", "b", "c", "d", "f"};
-  containers::Vector<std::string> V3(std::move(V));
+  s21::Vector<std::string> V = {"a", "b", "c", "d", "f"};
+  s21::Vector<std::string> V3(std::move(V));
   std::vector<std::string> V2 = {"a", "b", "c", "d", "f"};
   ;
   std::vector<std::string> V4(std::move(V2));
@@ -103,7 +103,7 @@ TEST(TestVectorConstructor, ConstructorNinth) {
 }
 
 TEST(TestVectorConstructor, ConstructorTenth) {
-  containers::Vector<std::string> V = {"a", "b", "c", "d", "f"};
+  s21::Vector<std::string> V = {"a", "b", "c", "d", "f"};
   std::vector<std::string> V2 = {"a", "b", "c", "d", "f"};
   ;
   ASSERT_EQ(V.size(), V2.size());
@@ -116,7 +116,7 @@ TEST(TestVectorConstructor, ConstructorTenth) {
 }
 
 TEST(TestVectorInsert, InsertFirst) {
-  containers::Vector<int> V = {1, 2, 3, 4, 5};
+  s21::Vector<int> V = {1, 2, 3, 4, 5};
   auto it = V.begin();
   it++;
   it++;
@@ -134,7 +134,7 @@ TEST(TestVectorInsert, InsertFirst) {
 }
 
 TEST(TestVectorInsert, InsertSecond) {
-  containers::Vector<int> V = {1, 2, 3, 4, 5};
+  s21::Vector<int> V = {1, 2, 3, 4, 5};
   auto it = V.end();
   it--;
   V.insert(it, 200);
@@ -150,7 +150,7 @@ TEST(TestVectorInsert, InsertSecond) {
 }
 
 TEST(TestVectorInsert, InsertThird) {
-  containers::Vector<int> V;
+  s21::Vector<int> V;
   V.push_back(2);
   V.push_back(1);
   V.push_back(3);
@@ -174,7 +174,7 @@ TEST(TestVectorInsert, InsertThird) {
 }
 
 TEST(TestVectorInsert, InsertFourth) {
-  containers::Vector<int> V;
+  s21::Vector<int> V;
   V.push_back(2);
   V.push_back(3);
   V.push_back(4);
@@ -202,7 +202,7 @@ TEST(TestVectorInsert, InsertFourth) {
 }
 
 TEST(TestVectorInsert, InsertFifth) {
-  containers::Vector<int> V = {1, 2, 3, 4, 5};
+  s21::Vector<int> V = {1, 2, 3, 4, 5};
   auto it = V.begin();
   for (size_t j = 0; j < V.size(); ++j) {
     it++;
@@ -222,7 +222,7 @@ TEST(TestVectorInsert, InsertFifth) {
 }
 
 TEST(TestVectorInsert, InsertSixth) {
-  containers::Vector<std::string> V = {"a", "b", "c", "d", "f"};
+  s21::Vector<std::string> V = {"a", "b", "c", "d", "f"};
   auto it = V.begin();
   for (size_t j = 0; j < V.size(); ++j) {
     it++;
@@ -242,7 +242,7 @@ TEST(TestVectorInsert, InsertSixth) {
 }
 
 TEST(TestVectorInsert, InsertSeventh) {
-  containers::Vector<char> V = {'a', 'b', 'c', 'd', 'f'};
+  s21::Vector<char> V = {'a', 'b', 'c', 'd', 'f'};
   auto it = V.end();
   it--;
   V.insert(it, 'e');
@@ -258,7 +258,7 @@ TEST(TestVectorInsert, InsertSeventh) {
 }
 
 // TEST(TestVectorShrinkToFit, ShrinkToFitFirst) {
-//   containers::Vector<int> V;
+//   s21::Vector<int> V;
 //   V.resize(100);
 //   V.shrink_to_fit();
 //   std::vector<int> V2;
@@ -269,7 +269,7 @@ TEST(TestVectorInsert, InsertSeventh) {
 // }
 
 // TEST(TestVectorShrinkToFit, ShrinkToFitSecond) {
-//   containers::Vector<int> V;
+//   s21::Vector<int> V;
 //   V.resize(100);
 //   V.resize(50);
 //   V.shrink_to_fit();
@@ -282,7 +282,7 @@ TEST(TestVectorInsert, InsertSeventh) {
 // }
 
 // TEST(TestVectorShrinkToFit, ShrinkToFitThird) {
-//   containers::Vector<int> V;
+//   s21::Vector<int> V;
 //   V.resize(0);
 //   V.resize(100);
 //   V.resize(50);
@@ -299,7 +299,7 @@ TEST(TestVectorInsert, InsertSeventh) {
 // }
 
 TEST(TestVectorPushBack, PushBackFirst) {
-  containers::Vector<int> V = {1, 2, 3, 4, 5};
+  s21::Vector<int> V = {1, 2, 3, 4, 5};
   V.push_back(6);
   std::vector<int> V2 = {1, 2, 3, 4, 5};
   V2.push_back(6);
@@ -314,7 +314,7 @@ TEST(TestVectorPushBack, PushBackFirst) {
 }
 
 TEST(TestVectorPushBack, PushBackSecond) {
-  containers::Vector<int> V;
+  s21::Vector<int> V;
   V.push_back(6);
   std::vector<int> V2;
   V2.push_back(6);
@@ -324,7 +324,7 @@ TEST(TestVectorPushBack, PushBackSecond) {
 }
 
 TEST(TestVectorPushBack, PushBackThird) {
-  containers::Vector<int> V;
+  s21::Vector<int> V;
   V.push_back(6);
   V.push_back(5);
   V.push_back(4);
@@ -343,7 +343,7 @@ TEST(TestVectorPushBack, PushBackThird) {
 }
 
 TEST(TestVectorPushBack, PushBackFourth) {
-  containers::Vector<char> V;
+  s21::Vector<char> V;
   V.push_back('a');
   V.push_back('b');
   V.push_back('c');
@@ -362,7 +362,7 @@ TEST(TestVectorPushBack, PushBackFourth) {
 }
 
 TEST(TestVectorPushBack, PushBackFifth) {
-  containers::Vector<std::string> V = {"a", "b", "c", "d", "f"};
+  s21::Vector<std::string> V = {"a", "b", "c", "d", "f"};
   V.push_back("e");
   std::vector<std::string> V2 = {"a", "b", "c", "d", "f"};
   V2.push_back("e");
@@ -376,7 +376,7 @@ TEST(TestVectorPushBack, PushBackFifth) {
 }
 
 TEST(TestVectorPopBack, PopBackFirst) {
-  containers::Vector<int> V = {1, 2, 3, 4, 5, 89};
+  s21::Vector<int> V = {1, 2, 3, 4, 5, 89};
   V.pop_back();
   std::vector<int> V2 = {1, 2, 3, 4, 5, 89};
   V2.pop_back();
@@ -390,7 +390,7 @@ TEST(TestVectorPopBack, PopBackFirst) {
 }
 
 TEST(TestVectorPopBack, PopBackSecond) {
-  containers::Vector<int> V = {1, 2, 3, 4};
+  s21::Vector<int> V = {1, 2, 3, 4};
   V.pop_back();
   std::vector<int> V2 = {1, 2, 3, 4};
   V2.pop_back();
@@ -402,7 +402,7 @@ TEST(TestVectorPopBack, PopBackSecond) {
 }
 
 TEST(TestVectorPopBack, PopBackThird) {
-  containers::Vector<int> V = {1, 2, 3, 4, 5};
+  s21::Vector<int> V = {1, 2, 3, 4, 5};
   V.pop_back();
   std::vector<int> V2 = {1, 2, 3, 4, 5};
   V2.pop_back();
@@ -415,7 +415,7 @@ TEST(TestVectorPopBack, PopBackThird) {
 }
 
 TEST(TestVectorPopBack, PopBackFourth) {
-  containers::Vector<int> V;
+  s21::Vector<int> V;
   V.push_back(6);
   V.push_back(5);
   V.push_back(4);
@@ -436,7 +436,7 @@ TEST(TestVectorPopBack, PopBackFourth) {
 }
 
 // TEST(TestVectorPopBack, PopBackFifth) {
-//   containers::Vector<int> V;
+//   s21::Vector<int> V;
 //   std::vector<int> V2;
 //   V.pop_back();
 //   V2.pop_back();
@@ -444,7 +444,7 @@ TEST(TestVectorPopBack, PopBackFourth) {
 // }
 
 TEST(TestVectorPopBack, PopBackSixth) {
-  containers::Vector<int> V = {1};
+  s21::Vector<int> V = {1};
   std::vector<int> V2 = {1};
   V.pop_back();
   V2.pop_back();
@@ -452,7 +452,7 @@ TEST(TestVectorPopBack, PopBackSixth) {
 }
 
 TEST(TestVectorPopBack, PopBackSeveth) {
-  containers::Vector<char> V;
+  s21::Vector<char> V;
   V.push_back('a');
   V.push_back('b');
   V.push_back('c');
@@ -472,7 +472,7 @@ TEST(TestVectorPopBack, PopBackSeveth) {
 }
 
 TEST(TestVectorPopBack, PopBackEighth) {
-  containers::Vector<char> V = {'a', 'b', 'c', 'd', 'f'};
+  s21::Vector<char> V = {'a', 'b', 'c', 'd', 'f'};
   std::vector<char> V2 = {'a', 'b', 'c', 'd', 'f'};
   V.pop_back();
   V2.pop_back();
@@ -485,7 +485,7 @@ TEST(TestVectorPopBack, PopBackEighth) {
 }
 
 TEST(TestVectorClear, ClearFirst) {
-  containers::Vector<int> V = {1, 2, 3, 4, 5};
+  s21::Vector<int> V = {1, 2, 3, 4, 5};
   V.clear();
   std::vector<int> V2 = {1, 2, 3, 4, 5};
   V2.clear();
@@ -494,7 +494,7 @@ TEST(TestVectorClear, ClearFirst) {
 }
 
 TEST(TestVectorClear, ClearSecond) {
-  containers::Vector<int> V = {4848, 344, 4565, 899, 22, -4505};
+  s21::Vector<int> V = {4848, 344, 4565, 899, 22, -4505};
   V.clear();
   std::vector<int> V2 = {4848, 344, 4565, 899, 22, -4505};
   V2.clear();
@@ -503,7 +503,7 @@ TEST(TestVectorClear, ClearSecond) {
 }
 
 TEST(TestVectorClear, ClearThird) {
-  containers::Vector<int> V;
+  s21::Vector<int> V;
   V.clear();
   std::vector<int> V2;
   V2.clear();
@@ -512,7 +512,7 @@ TEST(TestVectorClear, ClearThird) {
 }
 
 TEST(TestVectorErase, EraseFirst) {
-  containers::Vector<int> V = {1};
+  s21::Vector<int> V = {1};
   V.erase(V.begin());
   std::vector<int> V2 = {1};
   V2.erase(V2.begin());
@@ -521,7 +521,7 @@ TEST(TestVectorErase, EraseFirst) {
 }
 
 TEST(TestVectorErase, EraseSecond) {
-  containers::Vector<int> V = {1, 2, 3, 4, 5};
+  s21::Vector<int> V = {1, 2, 3, 4, 5};
   auto it = V.end();
   it--;
   it--;
@@ -542,7 +542,7 @@ TEST(TestVectorErase, EraseSecond) {
 }
 
 TEST(TestVectorErase, EraseThird) {
-  containers::Vector<int> V = {1, 2, 3, 4, 5};
+  s21::Vector<int> V = {1, 2, 3, 4, 5};
   auto it = V.end();
   it--;
   V.erase(it);
@@ -559,7 +559,7 @@ TEST(TestVectorErase, EraseThird) {
 }
 
 TEST(TestVectorErase, EraseFourth) {
-  containers::Vector<int> V = {1, 2, 3, 4, 5};
+  s21::Vector<int> V = {1, 2, 3, 4, 5};
   auto it = V.end();
   it--;
   it--;
@@ -578,7 +578,7 @@ TEST(TestVectorErase, EraseFourth) {
 }
 
 TEST(TestVectorErase, EraseSixth) {
-  containers::Vector<std::string> V = {"a", "b", "c", "d", "f"};
+  s21::Vector<std::string> V = {"a", "b", "c", "d", "f"};
   V.erase(V.begin());
   std::vector<std::string> V2 = {"a", "b", "c", "d", "f"};
   V2.erase(V2.begin());
@@ -591,7 +591,7 @@ TEST(TestVectorErase, EraseSixth) {
 }
 
 // TEST(TestVectorErase, EraseSeventh) {
-//   containers::Vector<std::string> V = {"a", "b", "c", "d", "f"};
+//   s21::Vector<std::string> V = {"a", "b", "c", "d", "f"};
 //   auto it = V.erase(V.begin());
 //   std::vector<std::string> V2 = {"a", "b", "c", "d", "f"};
 //   auto iter = V2.erase(V2.begin());
@@ -601,7 +601,7 @@ TEST(TestVectorErase, EraseSixth) {
 // }
 
 TEST(TestVectorFront, Front) {
-  containers::Vector<int> V = {1, 2, 3};
+  s21::Vector<int> V = {1, 2, 3};
   auto result_1 = V.front();
   std::vector<int> V2 = {1, 2, 3};
   auto result_2 = V2.front();
@@ -609,7 +609,7 @@ TEST(TestVectorFront, Front) {
 }
 
 TEST(TestVectorBack, Back) {
-  containers::Vector<int> V = {1, 2, 3};
+  s21::Vector<int> V = {1, 2, 3};
   auto result_1 = V.back();
   std::vector<int> V2 = {1, 2, 3};
   auto result_2 = V2.back();
@@ -617,7 +617,7 @@ TEST(TestVectorBack, Back) {
 }
 
 TEST(TestVectorData, DataFirst) {
-  containers::Vector<int> V = {1, 2, 3};
+  s21::Vector<int> V = {1, 2, 3};
   auto result_1 = V.data();
   std::vector<int> V2 = {1, 2, 3};
   auto result_2 = V2.data();
@@ -626,7 +626,7 @@ TEST(TestVectorData, DataFirst) {
 }
 
 TEST(TestVectorData, DataSecond) {
-  containers::Vector<int> V;
+  s21::Vector<int> V;
   auto result_1 = V.data();
   std::vector<int> V2;
   auto result_2 = V2.data();
@@ -635,7 +635,7 @@ TEST(TestVectorData, DataSecond) {
 }
 
 TEST(TestVectorEmpty, EmptyFirst) {
-  containers::Vector<int> V = {1, 2, 3};
+  s21::Vector<int> V = {1, 2, 3};
   auto result_1 = V.empty();
   std::vector<int> V2 = {1, 2, 3};
   auto result_2 = V2.empty();
@@ -644,7 +644,7 @@ TEST(TestVectorEmpty, EmptyFirst) {
 }
 
 TEST(TestVectorEmpty, EmptySecond) {
-  containers::Vector<int> V;
+  s21::Vector<int> V;
   auto result_1 = V.empty();
   std::vector<int> V2;
   auto result_2 = V2.empty();
@@ -653,7 +653,7 @@ TEST(TestVectorEmpty, EmptySecond) {
 }
 
 TEST(TestVectorSize, SizeFirst) {
-  containers::Vector<int> V = {1, 2, 3};
+  s21::Vector<int> V = {1, 2, 3};
   auto result_1 = V.size();
   std::vector<int> V2 = {1, 2, 3};
   auto result_2 = V2.size();
@@ -661,7 +661,7 @@ TEST(TestVectorSize, SizeFirst) {
 }
 
 TEST(TestVectorSize, SizeSecond) {
-  containers::Vector<int> V;
+  s21::Vector<int> V;
   auto result_1 = V.size();
   std::vector<int> V2;
   auto result_2 = V2.size();
@@ -669,7 +669,7 @@ TEST(TestVectorSize, SizeSecond) {
 }
 
 TEST(TestVectorCapacity, CapacityFirst) {
-  containers::Vector<int> V = {1, 2, 3};
+  s21::Vector<int> V = {1, 2, 3};
   auto result_1 = V.capacity();
   std::vector<int> V2 = {1, 2, 3};
   auto result_2 = V2.capacity();
@@ -677,7 +677,7 @@ TEST(TestVectorCapacity, CapacityFirst) {
 }
 
 TEST(TestVectorCapacity, CapacitySecond) {
-  containers::Vector<int> V;
+  s21::Vector<int> V;
   auto result_1 = V.capacity();
   std::vector<int> V2;
   auto result_2 = V2.capacity();
@@ -685,7 +685,7 @@ TEST(TestVectorCapacity, CapacitySecond) {
 }
 
 TEST(TestVectorMaxSize, MaxSizeFirst) {
-  containers::Vector<int> V = {1, 2, 3};
+  s21::Vector<int> V = {1, 2, 3};
   auto result_1 = V.max_size();
   std::vector<int> V2 = {1, 2, 3};
   auto result_2 = V2.max_size();
@@ -693,7 +693,7 @@ TEST(TestVectorMaxSize, MaxSizeFirst) {
 }
 
 TEST(TestVectorMaxSize, MaxSizeSecond) {
-  containers::Vector<int> V;
+  s21::Vector<int> V;
   auto result_1 = V.max_size();
   std::vector<int> V2;
   auto result_2 = V2.max_size();
@@ -701,7 +701,7 @@ TEST(TestVectorMaxSize, MaxSizeSecond) {
 }
 
 TEST(TestVectorMaxSize, MaxSizeThird) {
-  containers::Vector<std::string> V = {"a", "b", "c", "d", "f"};
+  s21::Vector<std::string> V = {"a", "b", "c", "d", "f"};
   std::vector<std::string> V2 = {"a", "b", "c", "d", "f"};
   auto result_1 = V.max_size();
   auto result_2 = V2.max_size();
@@ -709,7 +709,7 @@ TEST(TestVectorMaxSize, MaxSizeThird) {
 }
 
 TEST(TestVectorReserve, ReserveFirst) {
-  containers::Vector<int> V = {1, 2, 3};
+  s21::Vector<int> V = {1, 2, 3};
   V.reserve(6);
   std::vector<int> V2 = {1, 2, 3};
   V2.reserve(6);
@@ -718,7 +718,7 @@ TEST(TestVectorReserve, ReserveFirst) {
 }
 
 TEST(TestVectorReserve, ReserveSecond) {
-  containers::Vector<int> V;
+  s21::Vector<int> V;
   V.reserve(5);
   std::vector<int> V2;
   V2.reserve(5);
@@ -727,8 +727,8 @@ TEST(TestVectorReserve, ReserveSecond) {
 }
 
 TEST(TestVectorSwap, SwapFirst) {
-  containers::Vector<int> V = {1, 2, 3};
-  containers::Vector<int> V3 = {3, 2, 1};
+  s21::Vector<int> V = {1, 2, 3};
+  s21::Vector<int> V3 = {3, 2, 1};
   V.swap(V3);
   std::vector<int> V2 = {1, 2, 3};
   std::vector<int> V4 = {3, 2, 1};
@@ -740,8 +740,8 @@ TEST(TestVectorSwap, SwapFirst) {
 }
 
 TEST(TestVectorSwap, SwapSecond) {
-  containers::Vector<int> V = {1, 2};
-  containers::Vector<int> V3 = {4, 5, 6};
+  s21::Vector<int> V = {1, 2};
+  s21::Vector<int> V3 = {4, 5, 6};
   V.swap(V3);
   std::vector<int> V2 = {1, 2};
   std::vector<int> V4 = {4, 5, 6};
@@ -753,8 +753,8 @@ TEST(TestVectorSwap, SwapSecond) {
 }
 
 TEST(TestVectorSwap, SwapThird) {
-  containers::Vector<int> V = {1, 2, 3, 6, 7, 3, 6, 2, 4};
-  containers::Vector<int> V3 = {3};
+  s21::Vector<int> V = {1, 2, 3, 6, 7, 3, 6, 2, 4};
+  s21::Vector<int> V3 = {3};
   V.swap(V3);
   std::vector<int> V2 = {1, 2, 3, 6, 7, 3, 6, 2, 4};
   std::vector<int> V4 = {3};
@@ -766,8 +766,8 @@ TEST(TestVectorSwap, SwapThird) {
 }
 
 TEST(TestVectorSwap, SwapFourth) {
-  containers::Vector<int> V = {1};
-  containers::Vector<int> V3 = {4};
+  s21::Vector<int> V = {1};
+  s21::Vector<int> V3 = {4};
   V.swap(V3);
   std::vector<int> V2 = {1};
   std::vector<int> V4 = {4};
@@ -779,8 +779,8 @@ TEST(TestVectorSwap, SwapFourth) {
 }
 
 TEST(TestVectorSwap, SwapFifth) {
-  containers::Vector<std::string> V = {"a", "b", "c", "d", "f"};
-  containers::Vector<std::string> V3 = {"is", "not", "one", "word"};
+  s21::Vector<std::string> V = {"a", "b", "c", "d", "f"};
+  s21::Vector<std::string> V3 = {"is", "not", "one", "word"};
   V.swap(V3);
   std::vector<std::string> V2 = {"a", "b", "c", "d", "f"};
   std::vector<std::string> V4 = {"is", "not", "one", "word"};
@@ -792,8 +792,8 @@ TEST(TestVectorSwap, SwapFifth) {
 }
 
 TEST(TestVectorSwap, SwapSixth) {
-  containers::Vector<std::string> V3 = {"a", "b", "c", "d", "f"};
-  containers::Vector<std::string> V = {"is", "not", "one", "word"};
+  s21::Vector<std::string> V3 = {"a", "b", "c", "d", "f"};
+  s21::Vector<std::string> V = {"is", "not", "one", "word"};
   V.swap(V3);
   std::vector<std::string> V4 = {"a", "b", "c", "d", "f"};
   std::vector<std::string> V2 = {"is", "not", "one", "word"};
@@ -805,8 +805,8 @@ TEST(TestVectorSwap, SwapSixth) {
 }
 
 TEST(TestVectorOperator, OperatorFirst) {
-  containers::Vector<int> V = {4, 6, 8, 10};
-  containers::Vector<int> V3 = {2, 5};
+  s21::Vector<int> V = {4, 6, 8, 10};
+  s21::Vector<int> V3 = {2, 5};
   V = std::move(V3);
   std::vector<int> V2 = {4, 6, 8, 10};
   std::vector<int> V4 = {2, 5};
@@ -818,8 +818,8 @@ TEST(TestVectorOperator, OperatorFirst) {
 }
 
 TEST(TestVectorOperator, OperatorSecond) {
-  containers::Vector<int> V = {2, 5};
-  containers::Vector<int> V3 = {4, 6, 8, 10};
+  s21::Vector<int> V = {2, 5};
+  s21::Vector<int> V3 = {4, 6, 8, 10};
   V = std::move(V3);
   std::vector<int> V2 = {2, 5};
   std::vector<int> V4 = {4, 6, 8, 10};
@@ -833,8 +833,8 @@ TEST(TestVectorOperator, OperatorSecond) {
 }
 
 TEST(TestVectorOperator, OperatorThird) {
-  containers::Vector<int> V = {1, 2, 3, 6, 7, 3, 6, 2};
-  containers::Vector<int> V3 = {1, 2, 3, 6, 7, 3, 6, 2, 4};
+  s21::Vector<int> V = {1, 2, 3, 6, 7, 3, 6, 2};
+  s21::Vector<int> V3 = {1, 2, 3, 6, 7, 3, 6, 2, 4};
   V = std::move(V3);
   std::vector<int> V2 = {1, 2, 3, 6, 7, 3, 6, 2};
   std::vector<int> V4 = {1, 2, 3, 6, 7, 3, 6, 2, 4};
@@ -848,8 +848,8 @@ TEST(TestVectorOperator, OperatorThird) {
 }
 
 TEST(TestVectorOperator, OperatorFourth) {
-  containers::Vector<int> V = {4, 6, 8, 10};
-  containers::Vector<int> V3 = {2, 5};
+  s21::Vector<int> V = {4, 6, 8, 10};
+  s21::Vector<int> V3 = {2, 5};
   V = V3;
   std::vector<int> V2 = {4, 6, 8, 10};
   std::vector<int> V4 = {2, 5};
@@ -861,8 +861,8 @@ TEST(TestVectorOperator, OperatorFourth) {
 }
 
 TEST(TestVectorOperator, OperatorFifth) {
-  containers::Vector<int> V = {2, 5};
-  containers::Vector<int> V3 = {4, 6, 8, 10};
+  s21::Vector<int> V = {2, 5};
+  s21::Vector<int> V3 = {4, 6, 8, 10};
   V = V3;
   std::vector<int> V2 = {2, 5};
   std::vector<int> V4 = {4, 6, 8, 10};
@@ -876,8 +876,8 @@ TEST(TestVectorOperator, OperatorFifth) {
 }
 
 TEST(TestVectorOperator, OperatorSixth) {
-  containers::Vector<int> V = {1, 2, 3, 6, 7, 3, 6, 2};
-  containers::Vector<int> V3 = {1, 2, 3, 6, 7, 3, 6, 2, 4};
+  s21::Vector<int> V = {1, 2, 3, 6, 7, 3, 6, 2};
+  s21::Vector<int> V3 = {1, 2, 3, 6, 7, 3, 6, 2, 4};
   V = V3;
   std::vector<int> V2 = {1, 2, 3, 6, 7, 3, 6, 2};
   std::vector<int> V4 = {1, 2, 3, 6, 7, 3, 6, 2, 4};
@@ -891,8 +891,8 @@ TEST(TestVectorOperator, OperatorSixth) {
 }
 
 TEST(TestVectorOperator, OperatorSeventh) {
-  containers::Vector<std::string> V = {"a", "b", "c", "d", "f"};
-  containers::Vector<std::string> V3 = {"it", "is", "not", "one", "word"};
+  s21::Vector<std::string> V = {"a", "b", "c", "d", "f"};
+  s21::Vector<std::string> V3 = {"it", "is", "not", "one", "word"};
   V = V3;
   std::vector<std::string> V2 = {"a", "b", "c", "d", "f"};
   std::vector<std::string> V4 = {"it", "is", "not", "one", "word"};
@@ -906,8 +906,8 @@ TEST(TestVectorOperator, OperatorSeventh) {
 }
 
 TEST(TestVectorOperator, OperatorEighth) {
-  containers::Vector<std::string> V = {"it", "is", "not", "one", "word"};
-  containers::Vector<std::string> V3 = {"a", "b", "c", "d", "f"};
+  s21::Vector<std::string> V = {"it", "is", "not", "one", "word"};
+  s21::Vector<std::string> V3 = {"a", "b", "c", "d", "f"};
   V = V3;
   std::vector<std::string> V4 = {"a", "b", "c", "d", "f"};
   std::vector<std::string> V2 = {"it", "is", "not", "one", "word"};
@@ -921,28 +921,28 @@ TEST(TestVectorOperator, OperatorEighth) {
 }
 
 TEST(TestVectorAt, At) {
-  containers::Vector<int> V = {1, 2};
+  s21::Vector<int> V = {1, 2};
   std::vector<int> V2 = {1, 2};
   EXPECT_ANY_THROW(V.at(2));
   EXPECT_ANY_THROW(V2.at(7));
 }
 
 TEST(TestVectorAt, AtSecond) {
-  containers::Vector<int> V = {1, 2};
+  s21::Vector<int> V = {1, 2};
   std::vector<int> V2 = {1, 2};
   ASSERT_EQ(V.at(1), V2.at(1));
   ASSERT_EQ(V.at(0), V2.at(0));
 }
 
 TEST(TestVectorBrackets, BracketsSecond) {
-  containers::Vector<int> V = {1, 2};
+  s21::Vector<int> V = {1, 2};
   std::vector<int> V2 = {1, 2};
   ASSERT_EQ(V[0], V2[0]);
   ASSERT_EQ(V[1], V2[1]);
 }
 
 TEST(TestVectorIterator, IteratorFirst) {
-  containers::Vector<int> V = {1, 2};
+  s21::Vector<int> V = {1, 2};
   auto it = V.begin();
   std::vector<int> V2 = {1, 2};
   auto iter = V2.begin();
@@ -950,7 +950,7 @@ TEST(TestVectorIterator, IteratorFirst) {
 }
 
 TEST(TestVectorIterator, IteratorSecond) {
-  containers::Vector<int> V = {1, 2};
+  s21::Vector<int> V = {1, 2};
   auto it = V.end();
   std::vector<int> V2 = {1, 2};
   auto iter = V2.end();
@@ -958,7 +958,7 @@ TEST(TestVectorIterator, IteratorSecond) {
 }
 
 TEST(TestVectorIterator, IteratorThird) {
-  containers::Vector<int> V = {1, 2};
+  s21::Vector<int> V = {1, 2};
   auto it = V.end();
   --it;
   std::vector<int> V2 = {1, 2};
@@ -968,7 +968,7 @@ TEST(TestVectorIterator, IteratorThird) {
 }
 
 TEST(TestVectorIterator, IteratorFourth) {
-  containers::Vector<int> V = {1, 2};
+  s21::Vector<int> V = {1, 2};
   auto it = V.begin();
   std::vector<int> V2 = {1, 2};
   auto iter = V2.begin();
@@ -976,7 +976,7 @@ TEST(TestVectorIterator, IteratorFourth) {
 }
 
 // TEST(TestVectorIterator, IteratorFifth) {
-//   containers::Vector<std::string> V = {"it", "is", "not", "one", "word"};
+//   s21::Vector<std::string> V = {"it", "is", "not", "one", "word"};
 //   auto it = V.cbegin();
 //   it++;
 //   it++;
@@ -992,7 +992,7 @@ TEST(TestVectorIterator, IteratorFourth) {
 // }
 
 TEST(TestVectorIterator, IteratorSixth) {
-  containers::Vector<int> V = {1, 2};
+  s21::Vector<int> V = {1, 2};
   auto it = V.begin();
   ++it;
   std::vector<int> V2 = {1, 2};
@@ -1002,8 +1002,8 @@ TEST(TestVectorIterator, IteratorSixth) {
 }
 
 TEST(TestVectorIterator, IteratorSeventh) {
-  containers::Vector<int> V = {1, 2};
-  containers::Vector<int> V2 = {1, 2};
+  s21::Vector<int> V = {1, 2};
+  s21::Vector<int> V2 = {1, 2};
   auto it = V.begin();
   auto it2 = V2.begin();
   std::vector<int> V3 = {1, 2};
@@ -1014,8 +1014,8 @@ TEST(TestVectorIterator, IteratorSeventh) {
 }
 
 TEST(TestVectorIterator, IteratorEighth) {
-  containers::Vector<int> V = {1, 2};
-  containers::Vector<int> V2 = {1, 2};
+  s21::Vector<int> V = {1, 2};
+  s21::Vector<int> V2 = {1, 2};
   auto it = V.begin();
   auto it2 = V2.begin();
   std::vector<int> V3 = {1, 2};
@@ -1026,8 +1026,8 @@ TEST(TestVectorIterator, IteratorEighth) {
 }
 
 TEST(TestVectorIterator, IteratorNinth) {
-  containers::Vector<int> V = {1, 2, 3, 4, 5, 7, 10};
-  containers::Vector<int> V2 = {1, 2, 3, 4, 5, 7, 10};
+  s21::Vector<int> V = {1, 2, 3, 4, 5, 7, 10};
+  s21::Vector<int> V2 = {1, 2, 3, 4, 5, 7, 10};
   auto it = V.begin();
   it++;
   it++;
@@ -1042,7 +1042,7 @@ TEST(TestVectorIterator, IteratorNinth) {
 }
 
 TEST(TestVectorIterator, IteratorTenth) {
-  containers::Vector<int> V = {1, 2, 3, 4, 5};
+  s21::Vector<int> V = {1, 2, 3, 4, 5};
   auto it = V.begin();
   auto it2 = V.begin();
   it2++;
@@ -1056,7 +1056,7 @@ TEST(TestVectorIterator, IteratorTenth) {
 }
 
 TEST(TestVectorIterator, IteratorEleventh) {
-  containers::Vector<int> V = {1, 2, 3, 4, 5};
+  s21::Vector<int> V = {1, 2, 3, 4, 5};
   auto it = V.begin();
   auto it2 = V.begin();
   it2++;
@@ -1070,7 +1070,7 @@ TEST(TestVectorIterator, IteratorEleventh) {
 }
 
 TEST(TestVectorIterator, IteratorTwelfth) {
-  containers::Vector<int> V = {1, 2, 3, 4, 5};
+  s21::Vector<int> V = {1, 2, 3, 4, 5};
   auto it = V.begin();
   auto it2 = V.begin();
   it2++;
@@ -1086,7 +1086,7 @@ TEST(TestVectorIterator, IteratorTwelfth) {
 }
 
 TEST(TestVectorIterator, IteratorThirteenth) {
-  containers::Vector<int> V = {1, 2, 3, 4, 5};
+  s21::Vector<int> V = {1, 2, 3, 4, 5};
   auto it = V.begin();
   auto it2 = V.begin();
   it2++;
@@ -1102,7 +1102,7 @@ TEST(TestVectorIterator, IteratorThirteenth) {
 }
 /*
 TEST(TestVectorIteratorConst, IteratorConstFirst) {
-  containers::Vector<int> V = {1, 2};
+  s21::Vector<int> V = {1, 2};
   auto it = V.cbegin();
   std::vector<int> V2 = {1, 2};
   auto iter = V2.cbegin();
@@ -1110,7 +1110,7 @@ TEST(TestVectorIteratorConst, IteratorConstFirst) {
 }
 
 TEST(TestVectorIteratorConst, IteratorConstSecond) {
-  containers::Vector<int> V = {1, 2};
+  s21::Vector<int> V = {1, 2};
   auto it = V.cend();
   std::vector<int> V2 = {1, 2};
   auto iter = V2.cend();
@@ -1118,7 +1118,7 @@ TEST(TestVectorIteratorConst, IteratorConstSecond) {
 }
 
 TEST(TestVectorIteratorConst, IteratorConstThird) {
-  containers::Vector<int> V = {1, 2};
+  s21::Vector<int> V = {1, 2};
   auto it = V.cend();
   --it;
   std::vector<int> V2 = {1, 2};
@@ -1128,7 +1128,7 @@ TEST(TestVectorIteratorConst, IteratorConstThird) {
 }
 
 TEST(TestVectorIteratorConst, IteratorFourthConst) {
-  containers::Vector<int> V = {1, 2};
+  s21::Vector<int> V = {1, 2};
   auto it = V.cbegin();
   std::vector<int> V2 = {1, 2};
   auto iter = V2.cbegin();
@@ -1136,7 +1136,7 @@ TEST(TestVectorIteratorConst, IteratorFourthConst) {
 }
 
 TEST(TestVectorIteratorConst, IteratorFifthConst) {
-  containers::Vector<std::string> V = {"it", "is", "not", "one", "word"};
+  s21::Vector<std::string> V = {"it", "is", "not", "one", "word"};
   auto it = V.cbegin();
   it++;
   it++;
@@ -1152,7 +1152,7 @@ TEST(TestVectorIteratorConst, IteratorFifthConst) {
 }
 
 TEST(TestVectorIteratorConst, IteratorSixthConst) {
-  containers::Vector<int> V = {1, 2};
+  s21::Vector<int> V = {1, 2};
   auto it = V.cbegin();
   ++it;
   std::vector<int> V2 = {1, 2};
@@ -1162,8 +1162,8 @@ TEST(TestVectorIteratorConst, IteratorSixthConst) {
 }
 
 TEST(TestVectorIteratorConst, IteratorSeventhConst) {
-  containers::Vector<int> V = {1, 2};
-  containers::Vector<int> V2 = {1, 2};
+  s21::Vector<int> V = {1, 2};
+  s21::Vector<int> V2 = {1, 2};
   auto it = V.cbegin();
   auto it2 = V2.cbegin();
   std::vector<int> V3 = {1, 2};
@@ -1174,8 +1174,8 @@ TEST(TestVectorIteratorConst, IteratorSeventhConst) {
 }
 
 TEST(TestVectorIteratorConst, IteratorEighthConst) {
-  containers::Vector<int> V = {1, 2};
-  containers::Vector<int> V2 = {1, 2};
+  s21::Vector<int> V = {1, 2};
+  s21::Vector<int> V2 = {1, 2};
   auto it = V.cbegin();
   auto it2 = V2.cbegin();
   std::vector<int> V3 = {1, 2};
@@ -1186,8 +1186,8 @@ TEST(TestVectorIteratorConst, IteratorEighthConst) {
 }
 
 TEST(TestVectorIteratorConst, IteratorNinthConst) {
-  containers::Vector<int> V = {1, 2};
-  containers::Vector<int> V2 = {3, 2};
+  s21::Vector<int> V = {1, 2};
+  s21::Vector<int> V2 = {3, 2};
   auto it = V.cbegin();
   auto it2 = V2.cbegin();
   std::vector<int> V3 = {1, 2};
@@ -1200,7 +1200,7 @@ TEST(TestVectorIteratorConst, IteratorNinthConst) {
 }
 
 TEST(TestVectorIteratorConst, IteratorConstTenth) {
-  containers::Vector<int> V = {1, 2, 3, 4, 5};
+  s21::Vector<int> V = {1, 2, 3, 4, 5};
   auto it = V.cbegin();
   auto it2 = V.cbegin();
   it2++;
@@ -1214,7 +1214,7 @@ TEST(TestVectorIteratorConst, IteratorConstTenth) {
 }
 
 TEST(TestVectorIteratorConst, IteratorConstEleventh) {
-  containers::Vector<int> V = {1, 2, 3, 4, 5};
+  s21::Vector<int> V = {1, 2, 3, 4, 5};
   auto it = V.cbegin();
   auto it2 = V.cbegin();
   it2++;
@@ -1228,7 +1228,7 @@ TEST(TestVectorIteratorConst, IteratorConstEleventh) {
 }
 
 TEST(TestVectorIteratorConst, IteratorConstTwelfth) {
-  containers::Vector<int> V = {1, 2, 3, 4, 5};
+  s21::Vector<int> V = {1, 2, 3, 4, 5};
   auto it = V.cbegin();
   auto it2 = V.cbegin();
   it2++;
@@ -1242,7 +1242,7 @@ TEST(TestVectorIteratorConst, IteratorConstTwelfth) {
 }
 
 TEST(TestVectorIteratorConst, IteratorConstThirteenth) {
-  containers::Vector<int> V = {1, 2, 3, 4, 5};
+  s21::Vector<int> V = {1, 2, 3, 4, 5};
   auto it = V.cbegin();
   auto it2 = V.cbegin();
   it2++;
