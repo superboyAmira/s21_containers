@@ -3,8 +3,8 @@
 \date 26.01.2024
 */
 
-#ifndef S21_CONTAINER_SRC_VECTOR_H_
-#define S21_CONTAINER_SRC_VECTOR_H_
+#ifndef S21_CONTAINER_SRC_VECTOR_S21_VECTOR_H_
+#define S21_CONTAINER_SRC_VECTOR_S21_VECTOR_H_
 
 #include <iostream>
 #include <initializer_list>
@@ -18,7 +18,7 @@ template <typename T, bool is_const>
 struct Iterator;
 
 template <typename T, typename Allocator = std::allocator<T>>
-class Vector {
+class vector {
     public:
         using value_type = T;
         using reference = T &;
@@ -33,12 +33,12 @@ class Vector {
         /*
         \brief Default constructor. Constructs an empty container with a default-constructed allocator.
         */
-        Vector() noexcept : alloc_(Allocator()), size_(0), capacity_(0), arr_(nullptr) {};
+        vector() noexcept : alloc_(Allocator()), size_(0), capacity_(0), arr_(nullptr) {};
         
         /*
         \brief Constructs the container with count default-inserted instances of T. No copies are made.
         */
-        explicit Vector(size_t n, const Allocator& alloc = Allocator()) : alloc_(alloc), size_(n), capacity_(n) {
+        explicit vector(size_t n, const Allocator& alloc = Allocator()) : alloc_(alloc), size_(n), capacity_(n) {
             arr_ = traits::allocate(alloc_, n);
             for (size_type i = 0; i != n; i++) {
                 try{
@@ -54,7 +54,7 @@ class Vector {
         /*
         \brief Constructs the container with the contents of the initializer list items.
         */
-        Vector(std::initializer_list<value_type> const &items, const Allocator& alloc = Allocator()) : alloc_(alloc), size_(items.size()), capacity_(items.size()), arr_(nullptr) {
+        vector(std::initializer_list<value_type> const &items, const Allocator& alloc = Allocator()) : alloc_(alloc), size_(items.size()), capacity_(items.size()), arr_(nullptr) {
             arr_ = std::allocator_traits<Allocator>::allocate(alloc_, items.size());
             std::uninitialized_copy(items.begin(), items.end(), arr_);
         };
@@ -62,7 +62,7 @@ class Vector {
         /*
         \brief Copy constructor. Constructs the container with the copy of the contents of other.
         */
-        Vector(const Vector &v) : alloc_(std::allocator_traits<Allocator>::select_on_container_copy_construction(v.alloc_)), size_(v.size_), capacity_(v.capacity_) {
+        vector(const vector &v) : alloc_(std::allocator_traits<Allocator>::select_on_container_copy_construction(v.alloc_)), size_(v.size_), capacity_(v.capacity_) {
             arr_ = traits::allocate(alloc_, capacity_);
   
             for (auto itr_v = v.cbegin(), itr = begin(); itr_v != v.cend(); ++itr_v, ++itr) {
@@ -73,7 +73,7 @@ class Vector {
         /*
         \brief Move constructor. Constructs the container with the contents of other using move semantics. Allocator is obtained by move-construction from the allocator belonging to other. After the move, other is guaranteed to be empty().
         */
-        Vector(Vector &&v) noexcept : alloc_ (std::allocator_traits<Allocator>::select_on_container_copy_construction(v.alloc_)), size_(v.size_), capacity_(v.capacity_), arr_(std::move(v.arr_)) {
+        vector(vector &&v) noexcept : alloc_ (std::allocator_traits<Allocator>::select_on_container_copy_construction(v.alloc_)), size_(v.size_), capacity_(v.capacity_), arr_(std::move(v.arr_)) {
             v.arr_ = nullptr;
             v.size_ = 0;
             v.capacity_ = 0;
@@ -84,7 +84,7 @@ class Vector {
         \details The destructors of the elements 
         are called and the used storage is deallocated.
         */
-        ~Vector() noexcept {
+        ~vector() noexcept {
             for (auto itr = begin(); itr != end(); ++itr) {
                 traits::destroy(alloc_, std::addressof(*itr));
             }
@@ -98,7 +98,7 @@ class Vector {
         \brief Copy assignment operator. Replaces the contents with a copy of the contents of other. 
         \param[in] v another container to use as data source
         */
-        Vector& operator=(const Vector &v) {
+        vector& operator=(const vector &v) {
             if (this == &v) {
                 return *this;
             }
@@ -115,7 +115,7 @@ class Vector {
                 size_ = v.size_;
             } else {
                 clear();
-                Vector<T> new_vector(v);
+                vector<T> new_vector(v);
                 swap(new_vector);
             }
             return *this;
@@ -126,9 +126,9 @@ class Vector {
         \param[in] v another container to use as data source
         \details https://en.cppreference.com/w/cpp/container/vector/operator%3D
         */
-        Vector& operator=(Vector &&v) noexcept {
+        vector& operator=(vector &&v) noexcept {
             clear();
-            Vector new_vector(std::move(v));
+            vector new_vector(std::move(v));
             swap(new_vector);
             return *this;
         };
@@ -300,7 +300,7 @@ class Vector {
                 }
             }
             size_ = 0;
-        }
+        };
 
         /*
         \brief Insert element before pos.
@@ -324,7 +324,7 @@ class Vector {
             traits::construct(alloc_, std::addressof(arr_[index]), value_type(value));
             ++size_;
             return begin() + index;
-        }
+        };
 
         /*
         \brief Removes the element at pos.
@@ -386,7 +386,7 @@ class Vector {
         \brief Exchanges the contents and capacity of the container with those of other.
         \param[in] other container to exchange the contents with
         */
-        void swap(Vector &other) noexcept {
+        void swap(vector &other) noexcept {
             std::swap(alloc_, other.alloc_);
             std::swap(size_, other.size_);
             std::swap(capacity_, other.capacity_);
@@ -427,7 +427,7 @@ class Vector {
 template <typename T, bool is_const>
 struct Iterator {
     public:
-        friend class Vector<T>;
+        friend class vector<T>;
         using iterator_category = std::bidirectional_iterator_tag;
         using difference_type   = std::ptrdiff_t;
         using value_type        = T;
@@ -505,4 +505,5 @@ struct Iterator {
 };
 
 }
-#endif  // S21_CONTAINER_SRC_VECTOR_H_
+
+#endif  // S21_CONTAINER_SRC_VECTOR_S21_VECTOR_H_

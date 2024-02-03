@@ -3,5 +3,6 @@
 
 #include <iostream>
 #include "vector/s21_vector.h"
+#include "set/s21_set.h"
 
 #endif  // SRC_CONTAINERS_H_
