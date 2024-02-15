@@ -1,6 +1,6 @@
 /*
 \author superboy
-\date 26.01.2024
+\date 15.02.2024
 */
 
 #ifndef S21_CONTAINER_SRC_SET_S21_SET_H_
@@ -16,7 +16,7 @@
 namespace s21 {
 
 template<typename Key, class Compare = std::less<Key>, class Allocator = std::allocator<Key>>
-class set {
+class mao {
     public:
         using value_type = Key;
         using reference = value_type&;

@@ -1,0 +1,58 @@
+==322405== Conditional jump or move depends on uninitialised value(s)
+==322405==    at 0x10AA76: RBTree<int, int, std::less<int>, std::allocator<int> >::RotateL(RBNode<int, int, std::allocator<int> >&) (in /home/superboy/s21_containers/src/set/a.out)
+==322405==    by 0x10A491: RBTree<int, int, std::less<int>, std::allocator<int> >::EraseFixUp(RBNode<int, int, std::allocator<int> >*, RBNode<int, int, std::allocator<int> >*) (in /home/superboy/s21_containers/src/set/a.out)
+==322405==    by 0x1098EB: RBTree<int, int, std::less<int>, std::allocator<int> >::erase(RBIterator<int, int, false>) (in /home/superboy/s21_containers/src/set/a.out)
+==322405==    by 0x1093BA: main (in /home/superboy/s21_containers/src/set/a.out)
+==322405==  Uninitialised value was created by a heap allocation
+==322405==    at 0x4843FA3: operator new(unsigned long) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==322405==    by 0x10AE05: std::__new_allocator<RBNode<int, int, std::allocator<int> > >::allocate(unsigned long, void const*) (in /home/superboy/s21_containers/src/set/a.out)
+==322405==    by 0x10A7AE: std::allocator_traits<std::allocator<RBNode<int, int, std::allocator<int> > > >::allocate(std::allocator<RBNode<int, int, std::allocator<int> > >&, unsigned long) (in /home/superboy/s21_containers/src/set/a.out)
+==322405==    by 0x109D24: RBTree<int, int, std::less<int>, std::allocator<int> >::alloc(int const&, int const&) (in /home/superboy/s21_containers/src/set/a.out)
+==322405==    by 0x1095B3: RBTree<int, int, std::less<int>, std::allocator<int> >::insert(int const&, int const&) (in /home/superboy/s21_containers/src/set/a.out)
+==322405==    by 0x1092D6: main (in /home/superboy/s21_containers/src/set/a.out)
+==322405== 
+==322405== Conditional jump or move depends on uninitialised value(s)
+==322405==    at 0x10A247: RBTree<int, int, std::less<int>, std::allocator<int> >::dealloc(RBNode<int, int, std::allocator<int> >*) (in /home/superboy/s21_containers/src/set/a.out)
+==322405==    by 0x109CE1: RBTree<int, int, std::less<int>, std::allocator<int> >::DeallocateDestroyTree(RBNode<int, int, std::allocator<int> >*) (in /home/superboy/s21_containers/src/set/a.out)
+==322405==    by 0x109535: RBTree<int, int, std::less<int>, std::allocator<int> >::~RBTree() (in /home/superboy/s21_containers/src/set/a.out)
+==322405==    by 0x1093F1: main (in /home/superboy/s21_containers/src/set/a.out)
+==322405==  Uninitialised value was created by a heap allocation
+==322405==    at 0x4843FA3: operator new(unsigned long) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==322405==    by 0x10AE05: std::__new_allocator<RBNode<int, int, std::allocator<int> > >::allocate(unsigned long, void const*) (in /home/superboy/s21_containers/src/set/a.out)
+==322405==    by 0x10A7AE: std::allocator_traits<std::allocator<RBNode<int, int, std::allocator<int> > > >::allocate(std::allocator<RBNode<int, int, std::allocator<int> > >&, unsigned long) (in /home/superboy/s21_containers/src/set/a.out)
+==322405==    by 0x109D24: RBTree<int, int, std::less<int>, std::allocator<int> >::alloc(int const&, int const&) (in /home/superboy/s21_containers/src/set/a.out)
+==322405==    by 0x1095B3: RBTree<int, int, std::less<int>, std::allocator<int> >::insert(int const&, int const&) (in /home/superboy/s21_containers/src/set/a.out)
+==322405==    by 0x1092D6: main (in /home/superboy/s21_containers/src/set/a.out)
+==322405== 
+==322405== ERROR SUMMARY: 2 errors from 2 contexts (suppressed: 0 from 0)
+==322405== 
+==322405== 1 errors in context 1 of 2:
+==322405== Conditional jump or move depends on uninitialised value(s)
+==322405==    at 0x10A247: RBTree<int, int, std::less<int>, std::allocator<int> >::dealloc(RBNode<int, int, std::allocator<int> >*) (in /home/superboy/s21_containers/src/set/a.out)
+==322405==    by 0x109CE1: RBTree<int, int, std::less<int>, std::allocator<int> >::DeallocateDestroyTree(RBNode<int, int, std::allocator<int> >*) (in /home/superboy/s21_containers/src/set/a.out)
+==322405==    by 0x109535: RBTree<int, int, std::less<int>, std::allocator<int> >::~RBTree() (in /home/superboy/s21_containers/src/set/a.out)
+==322405==    by 0x1093F1: main (in /home/superboy/s21_containers/src/set/a.out)
+==322405==  Uninitialised value was created by a heap allocation
+==322405==    at 0x4843FA3: operator new(unsigned long) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==322405==    by 0x10AE05: std::__new_allocator<RBNode<int, int, std::allocator<int> > >::allocate(unsigned long, void const*) (in /home/superboy/s21_containers/src/set/a.out)
+==322405==    by 0x10A7AE: std::allocator_traits<std::allocator<RBNode<int, int, std::allocator<int> > > >::allocate(std::allocator<RBNode<int, int, std::allocator<int> > >&, unsigned long) (in /home/superboy/s21_containers/src/set/a.out)
+==322405==    by 0x109D24: RBTree<int, int, std::less<int>, std::allocator<int> >::alloc(int const&, int const&) (in /home/superboy/s21_containers/src/set/a.out)
+==322405==    by 0x1095B3: RBTree<int, int, std::less<int>, std::allocator<int> >::insert(int const&, int const&) (in /home/superboy/s21_containers/src/set/a.out)
+==322405==    by 0x1092D6: main (in /home/superboy/s21_containers/src/set/a.out)
+==322405== 
+==322405== 
+==322405== 1 errors in context 2 of 2:
+==322405== Conditional jump or move depends on uninitialised value(s)
+==322405==    at 0x10AA76: RBTree<int, int, std::less<int>, std::allocator<int> >::RotateL(RBNode<int, int, std::allocator<int> >&) (in /home/superboy/s21_containers/src/set/a.out)
+==322405==    by 0x10A491: RBTree<int, int, std::less<int>, std::allocator<int> >::EraseFixUp(RBNode<int, int, std::allocator<int> >*, RBNode<int, int, std::allocator<int> >*) (in /home/superboy/s21_containers/src/set/a.out)
+==322405==    by 0x1098EB: RBTree<int, int, std::less<int>, std::allocator<int> >::erase(RBIterator<int, int, false>) (in /home/superboy/s21_containers/src/set/a.out)
+==322405==    by 0x1093BA: main (in /home/superboy/s21_containers/src/set/a.out)
+==322405==  Uninitialised value was created by a heap allocation
+==322405==    at 0x4843FA3: operator new(unsigned long) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==322405==    by 0x10AE05: std::__new_allocator<RBNode<int, int, std::allocator<int> > >::allocate(unsigned long, void const*) (in /home/superboy/s21_containers/src/set/a.out)
+==322405==    by 0x10A7AE: std::allocator_traits<std::allocator<RBNode<int, int, std::allocator<int> > > >::allocate(std::allocator<RBNode<int, int, std::allocator<int> > >&, unsigned long) (in /home/superboy/s21_containers/src/set/a.out)
+==322405==    by 0x109D24: RBTree<int, int, std::less<int>, std::allocator<int> >::alloc(int const&, int const&) (in /home/superboy/s21_containers/src/set/a.out)
+==322405==    by 0x1095B3: RBTree<int, int, std::less<int>, std::allocator<int> >::insert(int const&, int const&) (in /home/superboy/s21_containers/src/set/a.out)
+==322405==    by 0x1092D6: main (in /home/superboy/s21_containers/src/set/a.out)
+==322405== 
+==322405== ERROR SUMMARY: 2 errors from 2 contexts (suppressed: 0 from 0)
