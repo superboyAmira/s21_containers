@@ -30,8 +30,10 @@ tr.insert(1, 5);
     //         std::cout << "[" << (*i).first << "," << (*i).second << "]" << "(" << i.node()->color << ")" << "->" << "[" << i.node()->parent->value->first << "] ";
         
     // }
+    
     tr.erase(tr.begin());
-    tr.erase(tr.begin());
+    RBIterator<int, int, false> i = tr.begin();
+    tr.erase(i);
     tr.erase(tr.begin());
     // std::cout << std::endl;
     // for (auto i = tr.begin(); i != tr.end(); ++i) {

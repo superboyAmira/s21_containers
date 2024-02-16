@@ -18,7 +18,7 @@ srcs:
 
 enum color_t { RED_NODE, BLACK_NODE };
 
-template <typename Key, typename T, typename Allocator = std::allocator<T>>
+template <typename Key, typename T>
 class RBNode {
     using value_type = std::pair<const Key, T>; 
 
@@ -57,13 +57,16 @@ class RBTree
         using iterator = RBIterator<Key, T, false>;
         using const_iterator = RBIterator<Key, T, true>;
         using size_type = size_t;
-        using node_type = RBNode<Key, T, Allocator>;
+        using node_type = RBNode<Key, T>;
 
 
-        using NodeAlloc = typename std::allocator_traits<
-            Allocator>::template rebind_alloc<RBNode<Key, T>>;
-        using ValAlloc = typename std::allocator_traits<
-            Allocator>::template rebind_alloc<std::pair<const Key, T>>;
+        // using NodeAlloc = typename std::allocator_traits<Allocator>::template rebind_alloc<RBNode<Key, T>>;
+        // using ValAlloc = typename std::allocator_traits<Allocator>::template rebind_alloc<std::pair<const Key, T>>;
+        // using node_traits = std::allocator_traits<NodeAlloc>;
+        // using val_traits = std::allocator_traits<ValAlloc>;
+        // using PairAllocator = typename MyAllocator<int>::template rebind<std::pair<int, std::string>>::other;
+        using NodeAlloc = typename Allocator::template rebind<RBNode<Key, T>>::other;
+        using ValAlloc = typename Allocator::template rebind<std::pair<const Key, T>>::other;
         using node_traits = std::allocator_traits<NodeAlloc>;
         using val_traits = std::allocator_traits<ValAlloc>;
 
@@ -173,9 +176,12 @@ class RBTree
         std::pair<iterator, bool> insert(const Key& key, const T& value) {
             ++size_;
             node_type* new_node = nullptr;
-            new_node = alloc(key, value);
+            try {
+                new_node = alloc(key, value);
+            } catch (...) {
+                throw;
+            }
             if (empty()) {
-                // std::cout << new_node->value.first << " root -->>>";
                 root_ = new_node;
                 root_->color = BLACK_NODE;
                 return std::make_pair<iterator, bool>(begin(), true);
@@ -195,9 +201,8 @@ class RBTree
             new_node->parent = parent;
             (key < parent->value->first) ? parent->left = new_node : parent->right = new_node;
             if (new_node->parent->color == RED_NODE) {
-                InsertFixUp(*new_node->parent);
+                InsertFixUp(new_node->parent);
             }
-            // std::cout << "[" << new_node->value.first << "," << new_node->value.second << "]" << "(" << new_node->color << ")" << "->" << "[" << new_node->parent->value.first << "] ";
             return std::make_pair<iterator, bool>(iterator(new_node, this), true);
         };
 
@@ -209,17 +214,18 @@ class RBTree
             color_t erase_color = erase_node->color;
 
             if (erase_color == RED_NODE && erase_node->left == nullptr && erase_node->right == nullptr) {
-                (erase_node->parent->left == erase_node) ? erase_node->parent->left = nullptr : erase_node->parent->right = nullptr;
+                // (erase_node->parent->left == erase_node) ? erase_node->parent->left = nullptr : erase_node->parent->right = nullptr;
                 dealloc(erase_node);
             } else if (erase_color == BLACK_NODE && erase_node->left == nullptr && erase_node->right == nullptr) {
                 EraseFixUp(erase_node, erase_node->parent);
+                (erase_node->parent->left == erase_node) ? erase_node->parent->left = nullptr : erase_node->parent->right = nullptr;
                 dealloc(erase_node);
             } else if (erase_node->left != nullptr && erase_node->right != nullptr) {
                 node_type* min_node = min(erase_node->right);
                 Replace(erase_node, min_node);
                 if (erase_node->left == nullptr && erase_node->right == nullptr) { 
                     if (erase_node->color == RED_NODE) {
-                        (erase_node->parent->left == erase_node) ? erase_node->parent->left = nullptr : erase_node->parent->right = nullptr;
+                        // (erase_node->parent->left == erase_node) ? erase_node->parent->left = nullptr : erase_node->parent->right = nullptr;
                         dealloc(erase_node);
                     } else {
                         EraseFixUp(erase_node, erase_node->parent);
@@ -231,7 +237,7 @@ class RBTree
                         EraseFixUp(erase_node, erase_node->parent);
                         dealloc(erase_node);
                     } else {
-                        (erase_node->parent->left == erase_node) ? erase_node->parent->left = nullptr : erase_node->parent->right = nullptr;
+                        // (erase_node->parent->left == erase_node) ? erase_node->parent->left = nullptr : erase_node->parent->right = nullptr;
                         dealloc(erase_node);
                     }
                 }
@@ -251,6 +257,9 @@ class RBTree
     private:
         void Replace(node_type* dest, node_type* src) noexcept {
             color_t col = dest->color;
+            node_type* parent = dest->parent;
+            node_type* left = dest->left;
+            node_type* right = dest->right;
 
             if (dest->parent == nullptr) {
                 root_ = src;
@@ -261,11 +270,33 @@ class RBTree
                 dest->parent->right = src;
             }
             if (src != nullptr) {
-                src->parent = dest->parent;
-
-                dest->parent = src;
                 dest->color = src->color;
+                if (src->parent == dest) {
+                    dest->parent = src;
+                } else {
+                    dest->parent = src->parent;
+                }
+                dest->right = src->right;
+                if (src->right != nullptr) {
+                    src->right->parent = dest;
+                }
+                dest->left = src->left;
+                if (src->left != nullptr) {
+                    src->left->parent = dest;
+                }
+                src->parent = parent;
                 src->color = col;
+
+                if (left == src) {
+                    src->left = dest;
+                } else {
+                    src->left = left;
+                }
+                if (right == src) {
+                    src->right = dest;
+                } else {
+                    src->right = right;
+                }
             }
         };
 
@@ -273,14 +304,14 @@ class RBTree
         https://habr.com/ru/articles/573502/
         */
         void EraseFixUp(node_type* node, node_type* parent) noexcept {
-            node_type* brother;
+            node_type* brother = nullptr;
             while (node != root_ && (node == nullptr || node->color == BLACK_NODE)) {
             if (node == parent->left) {
                 brother = parent->right;
                 if (brother->color == RED_NODE) {
                     brother->color = BLACK_NODE;
                     parent->color = RED_NODE;
-                    RotateL(*parent);
+                    RotateL(parent);
                     brother =  parent->right;
                     if (brother == nullptr) {
                         break;
@@ -295,14 +326,14 @@ class RBTree
                     if (brother->right == nullptr || brother->right->color == BLACK_NODE) {
                         brother->left->color = BLACK_NODE;
                         brother->color = RED_NODE;
-                        RotateR(*brother);
+                        RotateR(brother);
                         brother = parent->right;
                     }
                     brother->color = parent->color;
                     parent->color = BLACK_NODE;
                     if (brother->right != nullptr) {
                         brother->right->color = BLACK_NODE;
-                        RotateL(*parent);
+                        RotateL(parent);
                     }
                     node = root_;
                 }
@@ -311,7 +342,7 @@ class RBTree
                 if (brother->color == RED_NODE) {
                     brother->color = BLACK_NODE;
                     parent->color = RED_NODE;
-                    RotateR(*parent);
+                    RotateR(parent);
                     brother = parent->left;
                     if (brother == nullptr) {
                         break;
@@ -326,14 +357,14 @@ class RBTree
                     if (brother->left == nullptr || brother->left->color == BLACK_NODE) {
                         brother->right->color = BLACK_NODE;
                         brother->color = RED_NODE;
-                        RotateL(*brother);
+                        RotateL(brother);
                         brother = parent->left;
                     }
                     brother->color = parent->color;
                     parent->color = BLACK_NODE;
                     if (brother->left != nullptr) {
                         brother->left->color = BLACK_NODE;
-                        RotateR(*parent);
+                        RotateR(parent);
                     }
                     node = root_;
                 }
@@ -345,111 +376,103 @@ class RBTree
 // если правая нода красная и левая нода черная - левосторонний поворот
 // если левая нода красная и левая нода левой ноды красная - правосторонний поворот
 // если левая нода красная и правосторонняя нода красная - делаем свап цвета.
-        void InsertFixUp(node_type& parent) noexcept {
-            if (parent.left != nullptr && parent.right != nullptr) {
-                if (parent.right->color == RED_NODE && parent.left->color == BLACK_NODE) {
+        void InsertFixUp(node_type* parent) noexcept {
+            if (parent->left != nullptr && parent->right != nullptr) {
+                if (parent->right->color == RED_NODE && parent->left->color == BLACK_NODE) {
                     RotateL(parent);
-                } else if (parent.left->color == RED_NODE && parent.left->left->color == RED_NODE) {
+                } else if (parent->left->color == RED_NODE && parent->left->left->color == RED_NODE) {
                     RotateR(parent);
-                } else if (parent.left->color == RED_NODE && parent.right->color == RED_NODE) {
+                } else if (parent->left->color == RED_NODE && parent->right->color == RED_NODE) {
                     ColorSwap(parent);
                 }
-            } else if (parent.left == nullptr && parent.right != nullptr) {
+            } else if (parent->left == nullptr && parent->right != nullptr) {
                 RotateL(parent);
-                if (parent.parent != nullptr) {
-                    parent.parent->color = BLACK_NODE;
+                if (parent->parent != nullptr) {
+                    parent->parent->color = BLACK_NODE;
                 }
-            } else if (parent.left != nullptr && parent.right == nullptr) {
+            } else if (parent->left != nullptr && parent->right == nullptr) {
                 RotateR(parent);
-                if (parent.parent != nullptr) {
-                    parent.parent->color = BLACK_NODE;
+                if (parent->parent != nullptr) {
+                    parent->parent->color = BLACK_NODE;
                 }
             }
         }
 
-        void RotateL(node_type& parent) noexcept {
-            // if (parent.right == nullptr || parent.right == nullptr) {
-            //     return;
-            // }
-            // node_type* t_node = parent.right; 
-            // (parent != *root_) ? parent.color = RED_NODE : parent.color = BLACK_NODE;
-            // parent.right = parent.right->left;
-            // t_node->parent = parent.parent;
-            // t_node->parent->right = t_node;
-            // parent.parent = t_node;
-            // t_node->left = &parent;
-            // t_node->color = BLACK_NODE;
-            node_type* child = parent.right;
-            parent.right = child->left;
+        void RotateL(node_type* parent) noexcept {
+            node_type* child = nullptr;
+            child = parent->right;
+            parent->right = child->left;
             if (child->left != nullptr) {
-                child->left->parent = &parent;
+                child->left->parent = parent;
             }
-            child->parent = parent.parent;
-            if (parent.parent == nullptr) {
+            child->parent = parent->parent;
+            if (parent->parent == nullptr) {
                 root_ = child;
-            } else if (&parent == parent.parent->left) {
-                parent.parent->left = child;
+            } else if (parent == parent->parent->left) {
+                parent->parent->left = child;
             } else {
-                parent.parent->right = child;
+                parent->parent->right = child;
             }
-            child->left = &parent;
-            parent.parent = child;
+            child->left = parent;
+            parent->parent = child;
         };
 
-        void RotateR(node_type& parent) noexcept {
-            node_type* child = parent.left;
-            parent.left = child->right;
+        void RotateR(node_type* parent) noexcept {
+            node_type* child = parent->left;
+            parent->left = child->right;
             if (child->right != nullptr) {
-                child->right->parent = &parent;
+                child->right->parent = parent;
             }
-            child->parent = parent.parent;
-            if (parent.parent == nullptr) {
+            child->parent = parent->parent;
+            if (parent->parent == nullptr) {
                 root_ = child;
-            } else if (&parent == parent.parent->right) {
-                parent.parent->right = child;
+            } else if (parent == parent->parent->right) {
+                parent->parent->right = child;
             } else {
-                parent.parent->left = child;
+                parent->parent->left = child;
             }
-            child->right = &parent;
-            parent.parent = child;
+            child->right = parent;
+            parent->parent = child;
         };
 
-        void ColorSwap(node_type& red_parent) noexcept {
-            if (red_parent.color == BLACK_NODE || red_parent.left == nullptr || red_parent.right == nullptr) {
+        void ColorSwap(node_type* red_parent) noexcept {
+            if (red_parent->color == BLACK_NODE || red_parent->left == nullptr || red_parent->right == nullptr) {
                 return;
             }
-            red_parent.left->color = BLACK_NODE;
-            red_parent.right->color = BLACK_NODE;
-            (red_parent == *root_) ? red_parent.color = BLACK_NODE : red_parent.color = RED_NODE;
+            red_parent->left->color = BLACK_NODE;
+            red_parent->right->color = BLACK_NODE;
+            (red_parent == root_) ? red_parent->color = BLACK_NODE : red_parent->color = RED_NODE;
         };
 
         node_type* alloc(const Key& key, const T& value) {
-            node_type* new_node = node_traits::allocate(node_alloc_, sizeof(node_type));
+            node_type* new_node = nullptr;
+            new_node = node_traits::allocate(node_alloc_, 1);
             try {
-                new_node->value = val_traits::allocate(val_alloc_, sizeof(std::pair<const Key, T>));
+                new_node->value = val_traits::allocate(val_alloc_, 1);
                 val_traits::construct(val_alloc_, std::addressof(new_node->value->first), std::move_if_noexcept(key));
                 val_traits::construct(val_alloc_, std::addressof(new_node->value->second), std::move_if_noexcept(value));
-                node_traits::construct(node_alloc_, std::addressof(new_node->left), nullptr);
-                node_traits::construct(node_alloc_, std::addressof(new_node->right), nullptr);
+                // node_traits::construct(node_alloc_, std::addressof(new_node->left), nullptr);
+                // node_traits::construct(node_alloc_, std::addressof(new_node->right), nullptr);
+                new_node->left = nullptr;
+                new_node->right = nullptr;
+                new_node->parent = nullptr;
                 node_traits::construct(node_alloc_, std::addressof(new_node->color), RED_NODE);                // node_traits::construct(node_alloc_, std::addressof(new_node), );
             } catch (...) {
-                node_traits::deallocate(node_alloc_, new_node, sizeof(node_type));
+                node_traits::deallocate(node_alloc_, new_node, 1);
                 throw;
             }
             return new_node;
         };
-        
+
         void dealloc(node_type* node) noexcept {
-            if (node->parent != nullptr) {
-                (node->parent->left == node) ? node->parent->left = nullptr : node->parent->right = nullptr;
-            }
             node->right = nullptr;
             node->left = nullptr;
             node->parent = nullptr;
-            val_traits::destroy(val_alloc_, node->value);
-            val_traits::deallocate(val_alloc_, node->value, sizeof(std::pair<const Key, T>));
+            val_traits::destroy(val_alloc_, std::addressof(node->value->first));
+            val_traits::destroy(val_alloc_, std::addressof(node->value->second));
+            val_traits::deallocate(val_alloc_, node->value, 1);
             node_traits::destroy(node_alloc_, node);
-            node_traits::deallocate(node_alloc_, node, sizeof(node_type));
+            node_traits::deallocate(node_alloc_, node, 1);
             node = nullptr;
         };
 
