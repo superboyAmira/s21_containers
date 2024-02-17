@@ -1,7 +1,7 @@
 G++ = g++ -std=c++17
 CHECKFLAGS = -Wall -Werror -Wextra
 TEST_LIBS = -lgtest -pthread
-TEST_SRC = vector/vector_test.cc
+TEST_SRC = vector/vector_test.cc set/set_test.cc
 TEST_NAME = test
 
 all: clean test

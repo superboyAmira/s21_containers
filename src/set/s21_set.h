@@ -6,11 +6,8 @@
 #ifndef S21_CONTAINER_SRC_SET_S21_SET_H_
 #define S21_CONTAINER_SRC_SET_S21_SET_H_
 
-#include <iostream>
-#include <initializer_list>
-#include <memory>
-#include <iterator>
-#include <limits>
+#define DEBUG_ 0
+
 #include "rbtree.h"
 
 namespace s21 {
@@ -30,12 +27,14 @@ class set {
         set() noexcept {};
 
         set(std::initializer_list<value_type> const &items) {
-            tree_(items);
+            for (auto i = items.begin(); i < items.end(); ++i) {
+                insert(*i);
+            }
         };
 
         set(const set &other) : tree_(other.tree_), alloc_(traits::select_on_container_copy_construction(other.alloc_)), comp_(other.comp_) {};
         
-        set(set &&other) : tree_(std::move(other.tree_)), alloc_(traits::select_on_container_copy_construction(other.alloc_)), comp_(std::move(other.comp_)) {};
+        set(set &&other) : tree_(), alloc_(traits::select_on_container_copy_construction(other.alloc_)), comp_(std::move(other.comp_)) { tree_.Move(std::move(other.tree_)); };
         
         ~set() noexcept = default;
         
@@ -82,11 +81,20 @@ class set {
             }
         };
 
+#ifndef DEBUG_
+        void out(int *arr) {
+            for (int i = 0; i < 100; i++) { *(arr + i) = 0;};
+            for (auto i = begin(), j = 0; i != end(); ++i, ++j) {
+                *(arr + j) = (*i).first;
+            }
+        }
+#endif
+
         void swap(set &other) noexcept { tree_.swap(other.tree_); }
 
         void merge(set &other) noexcept {
             for (const auto &pair : other) {
-                tree_.insert(pair);
+                tree_.insert(pair.first, pair.second);
             }
             other.clear();
         };

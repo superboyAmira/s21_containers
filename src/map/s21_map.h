@@ -86,7 +86,7 @@ class mao {
 
         void merge(set &other) noexcept {
             for (const auto &pair : other) {
-                tree_.insert(pair);
+                tree_.insert(pair.first, pair.second);
             }
             other.clear();
         };

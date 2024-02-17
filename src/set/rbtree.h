@@ -5,6 +5,7 @@
 srcs:
     https://www.programiz.com/dsa/red-black-tree
     https://habr.com/ru/articles/557328/
+    https://habr.com/ru/articles/573502/
 */
 
 #ifndef S21_CONTAINER_SRC_SET_RBTREE_H_
@@ -14,7 +15,6 @@ srcs:
 #include <initializer_list>
 #include <memory>
 #include <iterator>
-#include <limits>
 
 enum color_t { RED_NODE, BLACK_NODE };
 
@@ -59,12 +59,6 @@ class RBTree
         using size_type = size_t;
         using node_type = RBNode<Key, T>;
 
-
-        // using NodeAlloc = typename std::allocator_traits<Allocator>::template rebind_alloc<RBNode<Key, T>>;
-        // using ValAlloc = typename std::allocator_traits<Allocator>::template rebind_alloc<std::pair<const Key, T>>;
-        // using node_traits = std::allocator_traits<NodeAlloc>;
-        // using val_traits = std::allocator_traits<ValAlloc>;
-        // using PairAllocator = typename MyAllocator<int>::template rebind<std::pair<int, std::string>>::other;
         using NodeAlloc = typename Allocator::template rebind<RBNode<Key, T>>::other;
         using ValAlloc = typename Allocator::template rebind<std::pair<const Key, T>>::other;
         using node_traits = std::allocator_traits<NodeAlloc>;
@@ -81,8 +75,22 @@ class RBTree
             if (!empty()) {
                 DeallocateDestroyTree(root_);
             }
+            size_ = 0;
+            root_ = nullptr;
         };
 
+        RBTree(const RBTree<Key, T> &other) : root_(nullptr), size_(0) {
+            auto it = other.cbegin();
+            for (size_t i = 0; i < other.size_; ++i) {
+                if (it == other.cend()) {
+                    break;
+                }
+                insert((*it).first, (*it).second);
+                it++;
+            }
+        };
+
+        /*
         RBTree(std::initializer_list<value_type> const &items)
         : val_alloc_(),
             node_alloc_(),
@@ -90,10 +98,22 @@ class RBTree
             root_(nullptr),
             size_(0) {
             for (auto i = items.begin(); i < items.end(); ++i) {
-                insert(*i);
+                insert((*i).first, *(i).second);
             }
         };
 
+        RBTree(std::initializer_list<Key> const &items)
+        : val_alloc_(),
+            node_alloc_(),
+            compare_(),
+            root_(nullptr),
+            size_(0) {
+            for (auto i = items.begin(); i < items.end(); ++i) {
+                insert(*i, *i);
+            }
+        };
+        */
+        
         iterator begin() noexcept { 
             node_type* begin = root_;
             while (begin != nullptr && begin->left != nullptr) {
@@ -127,8 +147,15 @@ class RBTree
             return end();
         };
         
-        bool contains(const Key& key) noexcept {
-            return (this->find(key) != this->end()) ? true : false;
+        bool contains(const Key& key) const noexcept {
+            if (!empty()) {
+                for (const_iterator itr = cbegin(); itr != cend(); ++itr) {
+                    if ((*itr).first == key) {
+                        return true;
+                    }
+                }
+            }
+            return false;
         };
 
         bool empty() const noexcept {
@@ -171,6 +198,8 @@ class RBTree
             if (!empty()) {
                 DeallocateDestroyTree(root_);
             }
+            size_ = 0;
+            root_ = nullptr;
         };
 
         std::pair<iterator, bool> insert(const Key& key, const T& value) {
@@ -201,7 +230,7 @@ class RBTree
             new_node->parent = parent;
             (key < parent->value->first) ? parent->left = new_node : parent->right = new_node;
             if (new_node->parent->color == RED_NODE) {
-                InsertFixUp(new_node->parent);
+                InsertFixUp(new_node);
             }
             return std::make_pair<iterator, bool>(iterator(new_node, this), true);
         };
@@ -212,9 +241,14 @@ class RBTree
             }
             node_type* erase_node = find((*pos).first).itr_node_;
             color_t erase_color = erase_node->color;
-
+            
+            if (erase_node == root_ && size_ == 1) {
+                dealloc(erase_node);
+                return;
+            }
+            
             if (erase_color == RED_NODE && erase_node->left == nullptr && erase_node->right == nullptr) {
-                // (erase_node->parent->left == erase_node) ? erase_node->parent->left = nullptr : erase_node->parent->right = nullptr;
+                (erase_node->parent->left == erase_node) ? erase_node->parent->left = nullptr : erase_node->parent->right = nullptr;
                 dealloc(erase_node);
             } else if (erase_color == BLACK_NODE && erase_node->left == nullptr && erase_node->right == nullptr) {
                 EraseFixUp(erase_node, erase_node->parent);
@@ -225,19 +259,21 @@ class RBTree
                 Replace(erase_node, min_node);
                 if (erase_node->left == nullptr && erase_node->right == nullptr) { 
                     if (erase_node->color == RED_NODE) {
-                        // (erase_node->parent->left == erase_node) ? erase_node->parent->left = nullptr : erase_node->parent->right = nullptr;
+                        (erase_node->parent->left == erase_node) ? erase_node->parent->left = nullptr : erase_node->parent->right = nullptr;
                         dealloc(erase_node);
                     } else {
                         EraseFixUp(erase_node, erase_node->parent);
+                        (erase_node->parent->left == erase_node) ? erase_node->parent->left = nullptr : erase_node->parent->right = nullptr;
                         dealloc(erase_node);
                     }
                 } else {
                     Replace(erase_node, (erase_node->left == nullptr) ? erase_node->right : erase_node->left);
                     if (erase_node->color == BLACK_NODE) {
                         EraseFixUp(erase_node, erase_node->parent);
+                        (erase_node->parent->left == erase_node) ? erase_node->parent->left = nullptr : erase_node->parent->right = nullptr;
                         dealloc(erase_node);
                     } else {
-                        // (erase_node->parent->left == erase_node) ? erase_node->parent->left = nullptr : erase_node->parent->right = nullptr;
+                        (erase_node->parent->left == erase_node) ? erase_node->parent->left = nullptr : erase_node->parent->right = nullptr;
                         dealloc(erase_node);
                     }
                 }
@@ -245,6 +281,7 @@ class RBTree
                 Replace(erase_node, (erase_node->left == nullptr) ? erase_node->right : erase_node->left);
                 if (erase_node->color == BLACK_NODE) {
                     EraseFixUp(erase_node, erase_node->parent);
+                    (erase_node->parent->left == erase_node) ? erase_node->parent->left = nullptr : erase_node->parent->right = nullptr;
                     dealloc(erase_node);
                 } else {
                     (erase_node->parent->left == erase_node) ? erase_node->parent->left = nullptr : erase_node->parent->right = nullptr;
@@ -254,7 +291,31 @@ class RBTree
             --size_;
         };
 
+        void swap(RBTree<Key, T> &other) {
+            std::swap(val_alloc_, other.val_alloc_);
+            std::swap(node_alloc_, other.node_alloc_);
+            std::swap(compare_, other.compare_);
+            std::swap(root_, other.root_);
+            std::swap(size_, other.size_);
+        };
+
+        void Move(RBTree<Key, T> &&other) noexcept {
+            root_ = other.root_;
+            size_ = other.size_;
+            val_alloc_ = other.val_alloc_;
+            node_alloc_ = other.node_alloc_;
+            compare_ = other.compare_;
+            other.root_ = nullptr;
+            other.size_ = 0;
+        };
+
     private:
+        ValAlloc val_alloc_;
+        NodeAlloc node_alloc_;
+        Compare compare_;
+        node_type* root_;
+        size_type size_;
+
         void Replace(node_type* dest, node_type* src) noexcept {
             color_t col = dest->color;
             node_type* parent = dest->parent;
@@ -291,11 +352,17 @@ class RBTree
                     src->left = dest;
                 } else {
                     src->left = left;
+                    if (left != nullptr) {
+                        left->parent = src;
+                    }
                 }
                 if (right == src) {
                     src->right = dest;
                 } else {
                     src->right = right;
+                    if (right != nullptr) {
+                        right->parent = src;
+                    }
                 }
             }
         };
@@ -305,6 +372,20 @@ class RBTree
         */
         void EraseFixUp(node_type* node, node_type* parent) noexcept {
             node_type* brother = nullptr;
+            
+            if (parent == root_ && size_ == 2) {
+                if (parent->left == node) {
+                    if (parent->right != nullptr) {
+                        parent->right->color = RED_NODE;
+                    }
+                } else {
+                    if (parent->left != nullptr) {
+                        parent->left->color = RED_NODE;
+                    }
+                }
+                return;
+            }
+
             while (node != root_ && (node == nullptr || node->color == BLACK_NODE)) {
             if (node == parent->left) {
                 brother = parent->right;
@@ -373,30 +454,56 @@ class RBTree
             node->color = BLACK_NODE;
         };
 
-// если правая нода красная и левая нода черная - левосторонний поворот
-// если левая нода красная и левая нода левой ноды красная - правосторонний поворот
-// если левая нода красная и правосторонняя нода красная - делаем свап цвета.
-        void InsertFixUp(node_type* parent) noexcept {
-            if (parent->left != nullptr && parent->right != nullptr) {
-                if (parent->right->color == RED_NODE && parent->left->color == BLACK_NODE) {
-                    RotateL(parent);
-                } else if (parent->left->color == RED_NODE && parent->left->left->color == RED_NODE) {
-                    RotateR(parent);
-                } else if (parent->left->color == RED_NODE && parent->right->color == RED_NODE) {
-                    ColorSwap(parent);
+        void InsertFixUp( node_type* new_node) noexcept {
+            node_type *uncle = nullptr;
+            node_type *parent = nullptr;
+            node_type *grandparent = nullptr;
+            while (new_node->parent->color == RED_NODE) {
+                parent = new_node->parent;
+                grandparent = new_node->parent->parent;
+                if (parent == grandparent->right) {
+                    uncle = new_node->parent->parent->left;
+                    if (uncle != nullptr && uncle->color == RED_NODE) {
+                        uncle->color = BLACK_NODE;
+                        parent->color = BLACK_NODE;
+                        grandparent->color = RED_NODE;
+                        new_node = grandparent;
+                    } else {
+                        if (new_node == parent->left) {
+                            new_node = parent;
+                            RotateR(new_node);
+                            parent = new_node->parent;
+                            grandparent = new_node->parent->parent;
+                        }
+                        parent->color = BLACK_NODE;
+                        grandparent->color = RED_NODE;
+                        RotateL(grandparent);
+                    }
+                } else {
+                    uncle = new_node->parent->parent->right;
+                    if (uncle != nullptr && uncle->color == RED_NODE) {
+                        uncle->color = BLACK_NODE;
+                        parent->color = BLACK_NODE;
+                        grandparent->color = RED_NODE;
+                        new_node = grandparent;
+                    } else {
+                        if (new_node == parent->right) {
+                            new_node = parent;
+                            RotateL(new_node);
+                            parent = new_node->parent;
+                            grandparent = new_node->parent->parent;
+                        }
+                        parent->color = BLACK_NODE;
+                        grandparent->color = RED_NODE;
+                        RotateR(grandparent);
+                    }
                 }
-            } else if (parent->left == nullptr && parent->right != nullptr) {
-                RotateL(parent);
-                if (parent->parent != nullptr) {
-                    parent->parent->color = BLACK_NODE;
-                }
-            } else if (parent->left != nullptr && parent->right == nullptr) {
-                RotateR(parent);
-                if (parent->parent != nullptr) {
-                    parent->parent->color = BLACK_NODE;
+                if (new_node == root_) {
+                    break;
                 }
             }
-        }
+            root_->color = BLACK_NODE;
+        };
 
         void RotateL(node_type* parent) noexcept {
             node_type* child = nullptr;
@@ -436,7 +543,7 @@ class RBTree
         };
 
         void ColorSwap(node_type* red_parent) noexcept {
-            if (red_parent->color == BLACK_NODE || red_parent->left == nullptr || red_parent->right == nullptr) {
+            if (red_parent->left == nullptr || red_parent->right == nullptr) {
                 return;
             }
             red_parent->left->color = BLACK_NODE;
@@ -451,8 +558,6 @@ class RBTree
                 new_node->value = val_traits::allocate(val_alloc_, 1);
                 val_traits::construct(val_alloc_, std::addressof(new_node->value->first), std::move_if_noexcept(key));
                 val_traits::construct(val_alloc_, std::addressof(new_node->value->second), std::move_if_noexcept(value));
-                // node_traits::construct(node_alloc_, std::addressof(new_node->left), nullptr);
-                // node_traits::construct(node_alloc_, std::addressof(new_node->right), nullptr);
                 new_node->left = nullptr;
                 new_node->right = nullptr;
                 new_node->parent = nullptr;
@@ -489,16 +594,6 @@ class RBTree
             }
             dealloc(ptr);
         };
-        
-
-
-
-    private:
-        ValAlloc val_alloc_;
-        NodeAlloc node_alloc_;
-        Compare compare_;
-        node_type* root_;
-        size_type size_;
 };
 
 template<typename Key, typename T, bool is_const>
@@ -513,7 +608,6 @@ class RBIterator {
         using conditional_node_ptr = std::conditional_t<is_const, const node_type*, node_type*>;
         using conditional_node_ref = std::conditional_t<is_const, const node_type&, node_type&>;
         using conditional_tree_ptr = std::conditional_t<is_const, const tree_type*, tree_type*>;
-        // using conditional_tree_ref = std::conditional_t<is_const, const tree_type&, tree_type&>;
 
         RBIterator() noexcept : itr_node_(nullptr), itr_tree_(nullptr) {};
 
@@ -546,9 +640,11 @@ class RBIterator {
         };
 
         RBIterator &operator++(int) {
-            RBIterator tmp(*this);
+            /*RBIterator tmp(*this);
             ++(*this);
-            return tmp;
+            return tmp;*/
+            ++(*this);
+            return *this;
         };
 
         RBIterator &operator--() {
@@ -570,9 +666,11 @@ class RBIterator {
         };
 
         RBIterator &operator--(int) {
-            RBIterator tmp(*this);
+            /*RBIterator tmp(*this);
             --(*this);
-            return tmp;
+            return tmp;*/
+            --(*this);
+            return *this;
         };
 
         bool operator==(const RBIterator &other) {
@@ -588,6 +686,5 @@ class RBIterator {
         conditional_node_ptr itr_node_;
         conditional_tree_ptr itr_tree_;
 };
-
 
 #endif  // S21_CONTAINER_SRC_SET_RBTREE_H_
