@@ -4,5 +4,6 @@
 #include <iostream>
 #include "vector/s21_vector.h"
 #include "set/s21_set.h"
+#include "map/s21_map.h"
 
 #endif  // SRC_CONTAINERS_H_

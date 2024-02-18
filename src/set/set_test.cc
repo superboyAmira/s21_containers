@@ -1,8 +1,7 @@
 #include <gtest/gtest.h>
 
-
-#include <string>
 #include <set>
+#include <string>
 
 #include "../s21_containers.h"
 
@@ -223,7 +222,6 @@ TEST(SetModifiers, Erase3) {
   EXPECT_FALSE(s21_set.contains(1));
 }
 
-
 TEST(SetModifiers, Erase4) {
   s21::set<int> s21_set = {10, 1, 20, 5, 12, 102, 3, 13};
 
@@ -251,7 +249,6 @@ TEST(SetModifiers, Erase4) {
   EXPECT_FALSE(s21_set.contains(1));
 }
 
-
 TEST(SetModifiers, Erase5) {
   s21::set<int> s21_set = {10, 1, 20, 5, 12, 102, 3, 13, 1000, 344, 56, 3425};
 
@@ -266,7 +263,6 @@ TEST(SetModifiers, Erase5) {
   s21_set.erase(s21_set.begin());
   s21_set.erase(s21_set.begin());
   s21_set.erase(s21_set.begin());
-  
 
   std_set.erase(std_set.begin());
   std_set.erase(std_set.begin());
@@ -284,12 +280,10 @@ TEST(SetModifiers, Erase5) {
   EXPECT_FALSE(s21_set.contains(1));
 }
 
-
 TEST(SetModifiers, EraseRoot) {
   s21::set<int> s21_set = {1, 2, 3};
 
   std::set<int> std_set = {1, 2, 3};
-
 
   auto i = s21_set.begin();
   ++i;
@@ -321,22 +315,22 @@ TEST(SetModifiers, Swap) {
   EXPECT_EQ(*std_set.find(6), 6);
 }
 
-// TEST(SetModifiers, Merge) {
-//   s21::set<int> s21_set = {1, 2, 3};
-//   s21::set<int> s21_setmerge = {4, 5, 6};
+TEST(SetModifiers, Merge) {
+  s21::set<int> s21_set = {1, 2, 3};
+  s21::set<int> s21_setmerge = {4, 5, 6};
 
-//   std::set<int> std_set = {1, 2, 3};
-//   std::set<int> std_setmerge = {4, 5, 6};
+  std::set<int> std_set = {1, 2, 3};
+  std::set<int> std_setmerge = {4, 5, 6};
 
-//   s21_set.merge(s21_setmerge);
-//   std_set.merge(std_setmerge);
+  s21_set.merge(s21_setmerge);
+  std_set.merge(std_setmerge);
 
-//   EXPECT_EQ((*s21_set.find(6)).first, 6);
-//   EXPECT_EQ(*std_set.find(6), 6);
+  EXPECT_EQ((*s21_set.find(6)).first, 6);
+  EXPECT_EQ(*std_set.find(6), 6);
 
-//   EXPECT_TRUE(s21_setmerge.empty());
-//   EXPECT_TRUE(std_setmerge.empty());
-// }
+  EXPECT_TRUE(s21_setmerge.empty());
+  EXPECT_TRUE(std_setmerge.empty());
+}
 
 TEST(SetLookup, Find) {
   s21::set<int> s21_set = {1, 2, 3};

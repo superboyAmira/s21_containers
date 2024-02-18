@@ -1,14 +1,14 @@
 G++ = g++ -std=c++17
 CHECKFLAGS = -Wall -Werror -Wextra
 TEST_LIBS = -lgtest -pthread
-TEST_SRC = vector/vector_test.cc set/set_test.cc
+TEST_SRC = vector/vector_test.cc set/set_test.cc map/map_test.cc
 TEST_NAME = test
 
 all: clean test
 
 test: 
 	$(G++) $(CHECKFLAGS) $(TEST_SRC) -o $(TEST_NAME) $(TEST_LIBS) -g
-	./$(TEST_NAME)
+	./$(TEST_NAME) --gtest_break_on_failure
 
 clean:
 	rm -rf lib_obj test lib/*.o ./*.a ./*.o ./a.out gcov_test *.html *.css report lib/*.dSYM ./*.gcno ./*.gcda ./*.info ./*.dSYM ./CPPLINT*
