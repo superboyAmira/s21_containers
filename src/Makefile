@@ -1,7 +1,7 @@
 G++ = g++ -std=c++17
 CHECKFLAGS = -Wall -Werror -Wextra
 TEST_LIBS = -lgtest -pthread
-TEST_SRC = vector/vector_test.cc set/set_test.cc map/map_test.cc
+TEST_SRC = vector/vector_test.cc set/set_test.cc map/map_test.cc array/array_test.cc stack/stack_test.cc queue/queue_test.cc 
 TEST_NAME = test
 
 all: clean test
@@ -24,13 +24,15 @@ gcov_report: clean
 format: 
 	clang-format -style=google -i */*.cc
 	clang-format -style=google -i */*.h
+	clang-format -style=google -i */*.tpp
 
 clang-format: 
 	clang-format -style=google -n */*.cc
 	clang-format -style=google -n */*.h
+	clang-format -style=google -n */*.tpp
 
 fsanitize: 
-	$(G++) */*$(TEST_SRC) $(CHECKFLAGS) -g -fsanitize=address $(TEST_LIBS) -o $(TEST_NAME) 
+	$(G++) $(TEST_SRC) $(CHECKFLAGS) -g -fsanitize=address $(TEST_LIBS) -o $(TEST_NAME) 
 	./$(TEST_NAME)
 
 valgrind: test
